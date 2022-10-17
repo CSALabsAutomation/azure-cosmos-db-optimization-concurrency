@@ -1,0 +1,5 @@
+title: Azure Cosmos DB Lab
+description: Azure Cosmos DB Lab
+type: cloud-environment # cloud-environment|remote-desktop|cli|code-ide
+vendor: azure # aws|azure|google|alibaba-cloud vendor is mandatory if type: cloud-environment|remote-desktop
+language: json # yaml|json (corresponds to template file extension)

@@ -1,0 +1,74 @@
+{
+  "permissions": [
+    {
+      "actions": ["*"],
+      "notActions": [
+        "Microsoft.Authorization/*/Delete",
+        "Microsoft.Authorization/*/Write",
+        "Microsoft.Authorization/elevateAccess/Action",
+        "Microsoft.MarketplaceOrdering/*",
+        "Microsoft.Compute/virtualMachines/Write",
+        "Microsoft.Compute/disks/Write"
+      ]
+    }
+  ],
+  "parameters": {
+    "allowedLocations": {
+      "type": "array",
+      "metadata": {
+        "description": "The list of locations that can be specified when deploying resources",
+        "strongType": "location",
+        "displayName": "Allowed locations"
+      }
+    },
+    "allowedServices": {
+      "type": "array",
+      "metadata": {
+        "description": "The list of allowed services",
+        "displayName": "Allowed services"
+      }
+    }
+  },
+  "displayName": "Azure CosmosDB Lab Policy",
+  "description": "This policy restricts what is allowed in the Azure CosmosDB Lab Policy",
+  "policyRule": {
+    "if": {
+      "anyOf": [
+        {
+          "not": {
+            "field": "type",
+            "in": "[parameters('allowedServices')]"
+          }
+        },
+        {
+          "not": {
+            "field": "location",
+            "in": "[parameters('allowedLocations')]"
+          }
+        }
+      ]
+    },
+    "then": {
+      "effect": "deny"
+    }
+  },
+  "parameters_values": {
+    "allowedLocations": {
+      "value": ["westus", "southcentralus", "{RGLocation}"]
+    },
+    "allowedServices": {
+      "value": [
+        "Microsoft.DocumentDB/databaseAccounts",
+        "Microsoft.Storage/storageAccounts",                
+        "Microsoft.Compute/images",
+        "Microsoft.Compute/disks",
+        "Microsoft.Network/networkInterfaces",
+        "Microsoft.Network/networkSecurityGroups",
+        "Microsoft.Network/publicIPAddresses",
+        "Microsoft.Network/virtualNetworks",
+        "Microsoft.Network/virtualNetworks/subnets",
+        "Microsoft.Compute/virtualMachines"
+      ]
+    }
+  }
+}
