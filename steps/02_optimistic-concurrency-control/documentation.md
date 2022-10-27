@@ -310,3 +310,84 @@ public class Program
    > You should see that the second update call fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
 
 
+
+----------------------------------------------------------------------------
+
+### Azure Monitor
+
+1.	Sign in to the Azure portal and navigate to your Cosmos DB Account.
+
+2.	Under **Monitoring** from the left-hand navigation bar, and select Metrics.
+ ![metrics](./assets/09-metrics_option.jpg "metrics ")
+
+3.	From the Metrics pane , Click on the **Scope** to open a pop-up.You can **Select a scope** under **Browse** by selecting the subscription , Resource types and the location . For the Resource type, select Azure Cosmos DB accounts then choose one of your existing Azure Cosmos DB accounts and click **Apply**.
+
+ ![resources](./assets/09-metrics_resources.jpg "resources")
+
+4.	Next you can select a **Metric** from the list of available metrics. You can select metrics specific to request units, storage, latency, availability, Cassandra, and others. To learn in detail about all the available metrics in this list, see the Metrics by category article. In this example, let's select **``Total Request units``** as Metrics and **``Avg``** as the aggregation value.
+ 
+- In addition to these details, you can also select the Time range and Time granularity of the metrics. At max, you can view metrics for the past 30 days. After you apply the filter, a chart is displayed based on your filter. You can see the average number of request units consumed per minute for the selected period.
+ 
+ ![metrics type](./assets/09-metrics_type.jpg "metrics type")
+ 
+### Add filters to metrics
+
+You can also filter metrics and the chart displayed by a specific CollectionName, DatabaseName, OperationType, Region, and StatusCode. To filter the metrics, select Add filter and choose the required property such as OperationType and select a value such as Query. The graph then displays the request units consumed for the query operation for the selected period. The operations executed via Stored procedure aren't logged so they aren't available under the OperationType metric.
+ ![metrics filter](./assets/09-metrics_filter.jpg "metrics filter")
+ 
+You can group metrics by using the Apply splitting option. For example, you can group the request units per operation type and view the graph for all the operations at once as shown in the following image:
+ ![metrics split](./assets/09-metrics_split.jpg "metrics split")
+ 
+
+Create Azure Cosmos DB diagnostic settings
+There are multiple ways to create the diagnostic settings, the Azure portal, via REST API, PowerShell or via Azure CLI.
+To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account, and under the Monitoring section, choose Diagnostic settings. Either edit an existing diagnostic setting or choose + Add diagnostic setting and choose the logs you wish to collect and the destinations to forward these logs to.
+AzureDiagnostics queries
+AzureDiagnostics 
+| where TimeGenerated >= ago(1h)
+| where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
+| summarize OperationCount = count(), TotalRequestCharged=sum(todouble(requestCharge_s)) by OperationName
+| order by TotalRequestCharged desc
+
+
+AzureDiagnostics 
+| where TimeGenerated >= ago(1h)
+| where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
+| summarize requestcount=count() by statusCode_s, bin(TimeGenerated, 10m)
+| render timechart.
+
+
+
+Resource-specific Queries
+
+
+CDBDataPlaneRequests
+| where TimeGenerated >= ago(1h)
+| summarize OperationCount = count(), TotalRequestCharged=sum(todouble(RequestCharge)) by OperationName
+| order by TotalRequestCharged desc
+
+
+
+CDBDataPlaneRequests 
+| where TimeGenerated >= ago(2h)
+| summarize requestcount=count() by StatusCode, bin(TimeGenerated, 10m)
+| render timechart
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
