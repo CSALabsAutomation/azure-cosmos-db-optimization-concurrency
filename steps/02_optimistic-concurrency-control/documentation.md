@@ -321,7 +321,7 @@ public class Program
 
  ![resources](./assets/09-metrics_resources.jpg "resources")
 
-4.	Next you can select a **Metric** from the list of available metrics. You can select metrics specific to request units, storage, latency, availability, Cassandra, and others. To learn in detail about all the available metrics in this list, see the Metrics by category article. In this example, let's select **``Total Request units``** as Metrics and **``Avg``** as the Aggregation Value.
+4.	Next you can select a **Metric** from the list of available metrics. You can select metrics specific to request units, storage, latency, availability, Cassandra, and others. To learn in detail about all the available metrics in this list, see the Metrics by category article. In this example, let's select **``Total Request Units``** as Metric and **``Avg``** as the Aggregation Value.
  
 > In addition to these details, you can also select the Time range and Time granularity of the metrics. At max, you can view metrics for the past 30 days. After you apply the filter, a chart is displayed based on your filter. You can see the average number of request units consumed per minute for the selected period.
  
