@@ -311,11 +311,9 @@ public class Program
 
 
 
-----------------------------------------------------------------------------
-
 ### Azure Monitor
 
-1.	Sign in to the Azure portal and navigate to your Cosmos DB Account.
+1.	Sign in to the Azure portal and navigate to your Azure Cosmos DB Account.
 
 2.	From the left-hand navigation bar , Under **Monitoring** select **Metrics**.
  ![metrics](./assets/09-metrics_option.jpg "metrics ")
@@ -338,13 +336,14 @@ You can also filter metrics and the chart displayed by a specific CollectionName
 You can group metrics by using the Apply splitting option. For example, you can group the request units per operation type and view the graph for all the operations at once as shown in the following image:
  ![metrics split](./assets/09-metrics_split.jpg "metrics split")
  
----------------------------------------------------------------------------------
 
 ### Create Azure Cosmos DB diagnostic settings
 There are multiple ways to create the diagnostic settings, the Azure portal, via REST API, PowerShell or via Azure CLI.
 
 To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account then under the **Monitoring** section, choose Diagnostic settings. Either edit an existing diagnostic setting or choose + Add diagnostic setting and choose the logs you wish to collect and the destinations to forward these logs to.
-
+ ![diagnostics](./assets/09-diag_option.jpg "diagnostics")
+ 
+ ![diagnostics](./assets/09-diag_settings.jpg "diagnostics options")
 
 
 **The NoSQL API log tables are:**
