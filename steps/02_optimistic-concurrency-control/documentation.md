@@ -317,10 +317,10 @@ public class Program
 
 1.	Sign in to the Azure portal and navigate to your Cosmos DB Account.
 
-2.	Under **Monitoring** from the left-hand navigation bar, and select Metrics.
+2.	From the left-hand navigation bar , Under **Monitoring** select **Metrics**.
  ![metrics](./assets/09-metrics_option.jpg "metrics ")
 
-3.	From the Metrics pane , Click on the **Scope** to open a pop-up.You can **Select a scope** under **Browse** by selecting the subscription , Resource types and the location . For the Resource type, select Azure Cosmos DB accounts then choose one of your existing Azure Cosmos DB accounts and click **Apply**.
+3.	From the Metrics pane , click on the **Scope** to open a pop-up.You can **Select a scope** under **Browse** by selecting the subscription , Resource types and the location . For the Resource type, select Azure Cosmos DB accounts then choose one of your existing Azure Cosmos DB accounts and click **Apply**.
 
  ![resources](./assets/09-metrics_resources.jpg "resources")
 
@@ -332,60 +332,83 @@ public class Program
  
 ### Add filters to metrics
 
-You can also filter metrics and the chart displayed by a specific CollectionName, DatabaseName, OperationType, Region, and StatusCode. To filter the metrics, select Add filter and choose the required property such as OperationType and select a value such as Query. The graph then displays the request units consumed for the query operation for the selected period. The operations executed via Stored procedure aren't logged so they aren't available under the OperationType metric.
+You can also filter metrics and the chart displayed by a specific CollectionName, DatabaseName, OperationType, Region, and StatusCode. To filter the metrics, select **Add filter** and choose the required property such as **``OperationType``* and select a value such as **``Query``**. The graph then displays the request units consumed for the query operation for the selected period. The operations executed via Stored procedure aren't logged so they aren't available under the OperationType metric.
  ![metrics filter](./assets/09-metrics_filter.jpg "metrics filter")
  
 You can group metrics by using the Apply splitting option. For example, you can group the request units per operation type and view the graph for all the operations at once as shown in the following image:
  ![metrics split](./assets/09-metrics_split.jpg "metrics split")
  
+---------------------------------------------------------------------------------
 
-Create Azure Cosmos DB diagnostic settings
+### Create Azure Cosmos DB diagnostic settings
 There are multiple ways to create the diagnostic settings, the Azure portal, via REST API, PowerShell or via Azure CLI.
-To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account, and under the Monitoring section, choose Diagnostic settings. Either edit an existing diagnostic setting or choose + Add diagnostic setting and choose the logs you wish to collect and the destinations to forward these logs to.
-AzureDiagnostics queries
+
+To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account then under the **Monitoring** section, choose Diagnostic settings. Either edit an existing diagnostic setting or choose + Add diagnostic setting and choose the logs you wish to collect and the destinations to forward these logs to.
+
+
+
+**The NoSQL API log tables are:**
+
+* **DataPlaneRequests** - This table logs back-end requests for operations that execute create, update, delete, or retrieve data.
+* **QueryRuntimeStatistics** - This table logs query operations against the NoSQL API account.
+* **PartitionKeyStatistics** - This table logs logical partition key statistics in estimated KB. It's helpful when troubleshooting skew storage.
+* **PartitionKeyRUConsumption** - This table logs every second aggregated RU/s consumption of partition keys. It's helpful when troubleshooting hot partitions.
+* **ControlPlaneRequests** - This table logs Azure Cosmos DB account control data, for example adding or removing regions in the replication settings.
+
+**Troubleshoot issues with diagnostics queries**
+
+When Azure Cosmos DB diagnostics data is sent to Log Analytics, it's sent to either the AzureDiagnostics table or to Resource-specific tables. The preferred mode is to send the data to Resource-specific tables, as such, each log chosen under the diagnostic settings options will have its own table. Choosing this mode makes it easier to work with the diagnostic data, easier to discover the schemas used, and improve performance in latency and query times.
+
+**AzureDiagnostics queries**
+
+i) If the legacy mode is chosen, the diagnostics data will be stored in the **``AzureDiagnostics table``**, so all kusto queries will be executed against that table. 
+
+ii) Since multiple Azure resources could also be populating this table, include the filter **``ResourceProvider=="MICROSOFT.DOCUMENTDB"``** in your ``where`` clause to only return Azure Cosmos DB entries. Additionally, to differentiate between the different logs you picked under **``diagnostic settings``**, add a filter on the **``Category column``**. For example, to return documents for the **``QueryRuntimeStatistics log``**, include the where clause | **``where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="QueryRuntimeStatistics"``**. 
+
+iii) Kusto is case-sensitive so make sure your column names are the right case. 
+> Let's review a couple of Kusto query examples using the AzureDiagnostics table.
+
+
+* Query that returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
+
+``` Kusto
 AzureDiagnostics 
 | where TimeGenerated >= ago(1h)
 | where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
 | summarize OperationCount = count(), TotalRequestCharged=sum(todouble(requestCharge_s)) by OperationName
 | order by TotalRequestCharged desc
+```
 
+* Create a query that returns a timechart graph for all successful (status 200) and rate limited (status 429) requests in the last hour. The requests will be aggregated every 10 minutes.
 
+``` Kusto
 AzureDiagnostics 
 | where TimeGenerated >= ago(1h)
 | where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
 | summarize requestcount=count() by statusCode_s, bin(TimeGenerated, 10m)
-| render timechart.
+| render timechart
+```
+### Resource-specific Queries
 
+Unlike the AzureDiagnostic queries, the **resource-specific** queries will be run against the different tables that were created for each log category chosen in the diagnostic setting dialog. To use these tables, prefix the table names in the list above with the string **``CDB``**. 
+> Let's review a couple of examples.
 
+* Query that returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
 
-Resource-specific Queries
-
-
+``` Kusto
 CDBDataPlaneRequests
 | where TimeGenerated >= ago(1h)
 | summarize OperationCount = count(), TotalRequestCharged=sum(todouble(RequestCharge)) by OperationName
 | order by TotalRequestCharged desc
+```
 
-
-
+* Create a query that returns a timechart graph for all successful (status 200) and rate limited (status 429) request in the last hour.
+``` Kusto
 CDBDataPlaneRequests 
 | where TimeGenerated >= ago(2h)
 | summarize requestcount=count() by StatusCode, bin(TimeGenerated, 10m)
 | render timechart
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
 
 
