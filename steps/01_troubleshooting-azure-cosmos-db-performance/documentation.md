@@ -1541,7 +1541,7 @@ The Activity log is a platform that provides insight into subscription-level eve
 Azure Cosmos DB stores data in the following tables.
 |Table              |Description   |   
 |-------------------|--------------|
-|AzureDiagnostics   |Common table used by multiple services to store Resource logs. Resource logs from Azure Cosmos DB can be identified with MICROSOFT.DOCUMENTDB.|  
+|AzureDiagnostics   |Common table used by multiple services to store Resource logs. Resource logs from Azure Cosmos DB can be identified with **``MICROSOFT.DOCUMENTDB``**.|  
 |AzureActivity      |Common table that stores all records from the Activity log.   |  
 
 ### Create Azure Cosmos DB diagnostic settings
