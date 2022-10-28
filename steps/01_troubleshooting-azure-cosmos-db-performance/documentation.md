@@ -1534,11 +1534,15 @@ Many applications have workloads that vary over time in a predictable way. For e
  
 ### Analyzing logs
 
-Data in Azure Monitor Logs is stored in tables where each table has its own set of unique properties.
-All resource logs in Azure Monitor have the same fields followed by service-specific fields.
-The Activity log is a platform that provides insight into subscription-level events. You can view it independently or route it to Azure Monitor Logs, where you can do much more complex queries using Log Analytics.
+* Data in Azure Monitor Logs is stored in tables where each table has its own set of unique properties.
 
-Azure Cosmos DB stores data in the following tables.
+* All resource logs in Azure Monitor have the same fields followed by service-specific fields.
+
+* The Activity log is a platform that provides insight into subscription-level events. 
+
+* You can view it independently or route it to Azure Monitor Logs, where you can do much more complex queries using Log Analytics.
+
+* Azure Cosmos DB stores data in the following tables.
 |Table              |Description   |   
 |-------------------|--------------|
 |AzureDiagnostics   |Common table used by multiple services to store Resource logs. Resource logs from Azure Cosmos DB can be identified with **``MICROSOFT.DOCUMENTDB``**.|  
@@ -1589,7 +1593,7 @@ iii) **Resource logs**: Provide insight into operations that were performed by a
 
 * You will also give permission for Azure Cosmos DB to access and surface this data in your logs. 
 
-To enable this feature,follow the steps mentioned below.
+To enable this feature, follow the steps mentioned below.
 
 i.   Navigate to your Azure Cosmod DB account. 
 
@@ -1612,10 +1616,10 @@ Choosing this mode makes it easier to work with the diagnostic data, easier to d
 
 ![diagnostics1](./assets/09-troubleshoot_edit.jpg "diagnostics options edit ")
 
+
    ii. Edit the destination details by toggling the destination table to **AzureDiagnostics**
 
 ![diagnostics2](./assets/09-troubleshoot_diag.jpg "diagnostics options")
-
 
 
 
