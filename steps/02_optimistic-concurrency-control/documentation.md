@@ -313,14 +313,13 @@ public class Program
 }
 ```
 
-
-1. Open 2 terminals, enter and execute the following command in both the terminals.
+22. Open 2 terminals, enter and execute the following command in both the terminals.
 
    ```sh
    dotnet run
    ```
 
-1. Observe the output from the terminals.
+23. Observe the output from the terminals.
 
    > You should see that the second update call fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
    
