@@ -1492,8 +1492,7 @@ This stores numeric data from monitored resources into a time-series database. T
 **Azure Monitor Logs**
 This collects logs and performance data where they can be retrieved and analyzed in different ways by using log queries. You must create a Log Analytics workspace to collect log data. Use Log Analytics to analyze data from Azure Monitor Logs.
 
-
-Now you will see how to 
+Now you will see how Metrics and Diagnostic settings work.
 
 1.	Sign in to the Azure portal and navigate to your Azure Cosmos DB Account.
 
