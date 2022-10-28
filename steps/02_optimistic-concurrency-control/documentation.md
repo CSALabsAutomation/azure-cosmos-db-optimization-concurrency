@@ -7,7 +7,6 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 ### Recommended Prerequisites 
 
 - [Transactions and optimistic concurrency control ](https://learn.microsoft.com/en-us/azure/cosmos-db/sql/database-transactions-optimistic-concurrency) 
-- [Monitor and troubleshoot an Azure Cosmos DB ](https://learn.microsoft.com/en-gb/training/paths/monitor-troubleshoot-azure-cosmos-db-sql-api-solution/)
 
 ### Create a .NET Core Project
 
@@ -266,41 +265,54 @@ using Microsoft.Azure.Cosmos;
 
 public class Program
 {
-    private static readonly string _endpointUri = "<your-endpoint-url>";
-    private static readonly string _primaryKey = "<your-primary-key>";
+    private static readonly string _endpointUri = "https://cosmosdb3rdcnrk.documents.azure.com:443/";
+    private static readonly string _primaryKey = "SVpgeB8Wta4HopefFmUH9woIJaHAAItDs1kRiFLSyCBbHCwg9NRCew581gSnT82p3Kk1xwU6P3IHJ36lMzqI2Q==";
     private static readonly string _databaseId = "NutritionDatabase";
     private static readonly string _containerId = "FoodCollection";
-    private static CosmosClient _client = new CosmosClient(_endpointUri, _primaryKey);
+
     public static async Task Main(string[] args)
     {
-       
-            var database = _client.GetDatabase(_databaseId);
+        using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+        {
+            var database = client.GetDatabase(_databaseId);
             var container = database.GetContainer(_containerId);
-
-            ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
-            await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
+               int randomClientNum = (new Random()).Next(100, 1000);
+          for (int i = 1; i <= 100; i++)
+           {
+                ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
             ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-            response.Resource.tags.Add(new Tag { name = "Demo" });
-            response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-            await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+             try
+               {
+                     response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                     response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                     await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                     await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+               }
+               catch (Exception ex)
+               {
+                   await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+               }
+           }
+         }
+      }
 
-            response.Resource.tags.Add(new Tag { name = "Failure" });
-            try
-            {
-                response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-            }
-            catch (Exception ex)
-            {
-                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-            }
-        
-    }  
+    public class Tag
+    {  
+        public string name { get; set; }
+    }
 
-    
+    public class Food
+    {
+        public string id { get; set; }
+        public string description { get; set; }
+        public List<Tag> tags { get; set; }
+        public string foodGroup { get; set; }
+    }
 }
 ```
-1. In the open terminal pane, enter and execute the following command:
+1. In the open 2 terminal pane, enter and execute the following command:
 
    ```sh
    dotnet run
