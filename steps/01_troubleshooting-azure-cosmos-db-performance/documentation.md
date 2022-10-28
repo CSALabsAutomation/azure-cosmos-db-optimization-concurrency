@@ -1543,6 +1543,7 @@ Many applications have workloads that vary over time in a predictable way. For e
 * You can view it independently or route it to Azure Monitor Logs, where you can do much more complex queries using Log Analytics.
 
 * Azure Cosmos DB stores data in the following tables.
+
 |Table              |Description   |   
 |-------------------|--------------|
 |AzureDiagnostics   |Common table used by multiple services to store Resource logs. Resource logs from Azure Cosmos DB can be identified with **``MICROSOFT.DOCUMENTDB``**.|  
@@ -1610,7 +1611,7 @@ iii. Click on **Diagnostics full-text query** followed by **Enable** option.
 * The preferred mode is to send the data to Resource-specific tables, as such each log chosen under the diagnostic settings options will have its own table. 
 Choosing this mode makes it easier to work with the diagnostic data, easier to discover the schemas used, and improve performance in latency and query times.
 
-* To troubleshoot issues with diagnostic queries, try the below two steps.
+* If you find any issues with diagnostic queries, try the below two steps.
 
     i. Navigate to your **Diagnostic settings** blade under Monitoring. Click on **Edit setting** option present infront of your diagnostic settings.
 
