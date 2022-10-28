@@ -1480,8 +1480,20 @@ Many applications have workloads that vary over time in a predictable way. For e
 > Note that you may need to refresh the Data Explorer to see the new value.
 
 
+### Monitor Azure Cosmos DB
 
-### Azure Monitoring
+* Azure Cosmos DB creates monitoring data using Azure Monitor, which is a full stack monitoring service in Azure that provides a complete set of features to monitor your Azure resources in addition to resources in other clouds and on-premises.
+
+* Azure Monitor is enabled, then it starts collecting metrics and activity logs once after creation of Azure resource. With few configuration, you can gather more monitoring data and enable other features. The Azure Monitor data platform is made up of Metrics and Logs. Each feature will collect different kinds of data and enables different Azure Monitor features.
+
+**Azure Monitor Metrics**
+This stores numeric data from monitored resources into a time-series database. The metric database is automatically created for each Azure subscription. Use Metrics Explorer to analyze data from Azure Monitor Metrics.
+
+**Azure Monitor Logs**
+This collects logs and performance data where they can be retrieved and analyzed in different ways by using log queries. You must create a Log Analytics workspace to collect log data. Use Log Analytics to analyze data from Azure Monitor Logs.
+
+
+Now you will see how to 
 
 1.	Sign in to the Azure portal and navigate to your Azure Cosmos DB Account.
 
@@ -1506,8 +1518,32 @@ Many applications have workloads that vary over time in a predictable way. For e
 * You can group metrics by using the **``Apply splitting``** option. For example, you can group the request units per operation type and view the graph for all the operations at once as shown in the following image:
  ![metrics split](./assets/09-metrics_split.jpg "metrics split")
  
+ 
+### Analyzing logs
+
+Data in Azure Monitor Logs is stored in tables where each table has its own set of unique properties.
+All resource logs in Azure Monitor have the same fields followed by service-specific fields.
+The Activity log is a platform that provides insight into subscription-level events. You can view it independently or route it to Azure Monitor Logs, where you can do much more complex queries using Log Analytics.
+
+Azure Cosmos DB stores data in the following tables.
+|Table              |Description   |   
+|-------------------|--------------|
+|AzureDiagnostics   |Common table used by multiple services to store Resource logs. Resource logs from Azure Cosmos DB can be identified with MICROSOFT.DOCUMENTDB.|  
+|AzureActivity      |Common table that stores all records from the Activity log.   |  
 
 ### Create Azure Cosmos DB diagnostic settings
+
+Diagnostic settings will define where resource logs and metrics for a particular resource has to be sent. Possible destinations are:
+
+  i) **Activity log**: Subscription-level events that track operations for each Azure resource, for example, creating a new resource or starting a virtual machine. Activity log events are automatically generated and collected for viewing in the Azure portal. You can create a diagnostic setting to send the activity log to Azure Monitor Logs.
+
+ ii) **Platform metrics**: Numerical values that are automatically collected at regular intervals and describe some aspect of a resource at a particular time. 
+Platform metrics are automatically generated and collected in Azure Monitor Metrics.
+
+iii) **Resource logs**: Provide insight into operations that were performed by an Azure resource. Operation examples might be getting a secret from a key vault or making a request to a database. Resource logs are generated automatically, but you must create a diagnostic setting to send them to Azure Monitor Logs.
+
+ iv) **Virtual machine guest metrics and logs**: Performance and log data from the guest operating system of Azure virtual machines. You must install an agent on the virtual machine to collect this data and send it to Azure Monitor Metrics and Azure Monitor Logs.
+
 * There are multiple ways to create the diagnostic settings, the Azure portal, via REST API, PowerShell or via Azure CLI.
 
 * To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account. Under the **Monitoring** section, choose Diagnostic settings. Either edit an existing diagnostic setting or choose **+ Add diagnostic setting** and choose the logs you wish to collect and the destinations to forward these logs to.
