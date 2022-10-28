@@ -197,21 +197,33 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 1. Your `Main` method should now look like this:
 
    ```csharp
-   public static async Task Main(string[] args)
-   {
-      Database database = _client.GetDatabase(_databaseId);
-      Container container = database.GetContainer(_containerId);
+      public static async Task Main(string[] args)
+    {
+        using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+        {
+            var database = client.GetDatabase(_databaseId);
+            var container = database.GetContainer(_containerId);
+               int randomClientNum = (new Random()).Next(100, 1000);
+            for (int i = 1; i <= 100; i++)
+            {
+                ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
-      ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
-      await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
-
-      ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-      response.Resource.tags.Add(new Tag { name = "Demo" });
-
-      response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-      await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-
-   }
+            ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
+          try
+            {
+                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+            }
+                }
+            }
+        }
    ```
 
 1. Save all of your open editor tabs.
@@ -243,14 +255,17 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 1. Add error handling to the **UpsertItemAsync** call you just added by wrapping it with a try-catch and then output the resulting error message. The code should now look like this:
 
    ```csharp
-   try
-   {
-      response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-   }
-   catch (Exception ex)
-   {
-      await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-   }
+     try
+            {
+                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+            }
    ```
 
 1. Save all of your open editor tabs.
