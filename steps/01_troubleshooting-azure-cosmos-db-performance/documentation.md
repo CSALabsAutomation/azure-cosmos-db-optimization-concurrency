@@ -1601,14 +1601,23 @@ iii. Click on **Diagnostics full-text query** followed by **Enable** option.
 
 **Troubleshoot issues with diagnostics queries**
 
-* When Azure Cosmos DB diagnostics data is sent to Log Analytics, it's sent to either the AzureDiagnostics table or to Resource-specific tables. 
+* When Azure Cosmos DB diagnostics data is sent to Log Analytics, it's sent to either the **AzureDiagnostics** table or to **Resource-specific tables.** 
 
-* The preferred mode is to send the data to Resource-specific tables, as such, each log chosen under the diagnostic settings options will have its own table. 
+* The preferred mode is to send the data to Resource-specific tables, as such each log chosen under the diagnostic settings options will have its own table. 
+Choosing this mode makes it easier to work with the diagnostic data, easier to discover the schemas used, and improve performance in latency and query times.
 
-* Choosing this mode makes it easier to work with the diagnostic data, easier to discover the schemas used, and improve performance in latency and query times.
+* To troubleshoot issues with diagnostic queries, try the below two steps.
+
+    i. Navigate to your **Diagnostic settings** blade under Monitoring. Click on **Edit setting** option present infront of your diagnostic settings.
+
+![diagnostics1](./assets/09-troubleshoot_edit.jpg "diagnostics options edit ")
+
+   ii. Edit the destination details by toggling the destination table to **AzureDiagnostics**
+
+![diagnostics2](./assets/09-troubleshoot_diag.jpg "diagnostics options")
 
 
- ![diagnostics](./assets/09-diag_features.jpg "diagnostics options")
+
 
 
 **AzureDiagnostics queries**
