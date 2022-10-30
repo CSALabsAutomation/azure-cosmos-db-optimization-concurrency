@@ -124,16 +124,33 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```csharp
    public static async Task Main(string[] args)
     {
+    using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+        {
         Database database = _client.GetDatabase(_databaseId);
         Container container = database.GetContainer(_containerId);
-
+        }
     }
    ```
-
-1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id:
-
-   ```csharp
+1. Add the following Code to Generate random Clientid 
+ ```csharp
+  int randomClientNum = (new Random()).Next(100, 1000);
+ ```
+ 1. Implemented try,catch block of code  to handel the exception handeling 
+ ```try{}
+    catch {}
+ ```
+ 3.Add the following code to loop the same record to update and get Concurrency inside the main
+ ```csharp
+         for (int i = 1; i <= 100; i++)
+            {
+            }
+ ``` 
+1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id inside the loop
+   ```
+   for (int i = 1; i <= 100; i++)
+   {
    ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
+   }
    ```
 
 1. Add the following line of code to show the current ETag value of the item:
@@ -142,7 +159,7 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    await Console.Out.WriteLineAsync($"ETag: {response.ETag}");
    ```
 
-   > The ETag header and the current value are included in all response messages.
+    The ETag header and the current value are included in all response messages.
 
 1. Save all of your open editor tabs.
 
@@ -174,10 +191,10 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
    ```
 
-1. Add a new line of code to update a property of the retrieved item:
+1. Add a new line of code to update a description and append randomClientNum and incremented i value of the retrieved item:
 
    ```csharp
-   response.Resource.tags.Add(new Tag { name = "Demo" });
+    response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
    ```
 
    > This line of code will modify a property of the item. Here we are modifying the **tags** collection property by adding a new **Tag** object.
@@ -187,7 +204,12 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```csharp
    response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
    ```
+1. Add a new line of code to print out the description of the newley updates value:
 
+ ```
+ await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+ ```
+ 
 1. Add a new line of code to print out the **ETag** of the newly updated item:
 
    ```csharp
@@ -195,23 +217,35 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```
 
 1. Your `Main` method should now look like this:
+  ```csharp
+   
+  public static async Task Main(string[] args)
+    {
+        using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+        {
+            var database = client.GetDatabase(_databaseId);
+            var container = database.GetContainer(_containerId);
+            int randomClientNum = (new Random()).Next(100, 1000);
+            for (int i = 1; i <= 100; i++)
+            {
+                ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
-   ```csharp
-   public static async Task Main(string[] args)
-   {
-      Database database = _client.GetDatabase(_databaseId);
-      Container container = database.GetContainer(_containerId);
-
-      ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
-      await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
-
-      ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-      response.Resource.tags.Add(new Tag { name = "Demo" });
-
-      response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-      await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-
-   }
+          ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
+          try
+            {
+                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+            }
+           }
+          }
+        }
    ```
 
 1. Save all of your open editor tabs.
@@ -226,13 +260,7 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 
    > You should see that the value of the ETag property has changed. The **ItemRequestOptions** class helped us implement optimistic concurrency by specifying that we wanted the SDK to use the If-Match header to allow the server to decide whether a resource should be updated. The If-Match value is the ETag value to be checked against. If the ETag value matches the server ETag value, the resource is updated. If the ETag is no longer current, the server rejects the operation with an "HTTP 412 Precondition failure" response code. The client then re-fetches the resource to acquire the current ETag value for the resource.
 
-1. Back in the `Main` method, add a new line of code to again update a property of the item:
-
-   ```csharp
-   response.Resource.tags.Add(new Tag { name = "Failure" });
-   ```
-
-1. Add a new line of code to again invoke the **UpsertItemAsync** method passing in both the updated item and the same options as before:
+1. Line of code to again invoke the **UpsertItemAsync** method passing in both the updated item and the same options as before:
 
    ```csharp
    response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
@@ -297,19 +325,7 @@ public class Program
            }
          }
       }
-
-    public class Tag
-    {  
-        public string name { get; set; }
-    }
-
-    public class Food
-    {
-        public string id { get; set; }
-        public string description { get; set; }
-        public List<Tag> tags { get; set; }
-        public string foodGroup { get; set; }
-    }
+   
 }
 ```
 
