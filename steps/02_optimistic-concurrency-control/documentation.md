@@ -136,8 +136,14 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
   int randomClientNum = (new Random()).Next(100, 1000);
  ```
  1. Implemented try,catch block of code  to handel the exception handeling 
- ```try{}
-    catch {}
+ ```csharp
+    try
+    {
+    }
+    catch 
+    {
+    }
+    
  ```
  3.Add the following code to loop the same record to update and get Concurrency inside the main
  ```csharp
@@ -199,18 +205,18 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 
    > This line of code will modify a property of the item. Here we are modifying the **tags** collection property by adding a new **Tag** object.
 
-1. Add a new line of code to invoke the **UpsertItemAsync** method passing in both the item and the options:
+1. Add a new line of code inside try block to invoke the **UpsertItemAsync** method passing in both the item and the options:
 
    ```csharp
    response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
    ```
-1. Add a new line of code to print out the description of the newley updates value:
+1. Add a new line of code inside try block to print out the description of the newley updates value:
 
  ```
  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
  ```
  
-1. Add a new line of code to print out the **ETag** of the newly updated item:
+1. Add a new line of code inside try block to print out the **ETag** of the newly updated item:
 
    ```csharp
    await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
