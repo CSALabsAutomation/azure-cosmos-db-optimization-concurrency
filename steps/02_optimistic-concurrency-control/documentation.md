@@ -310,8 +310,22 @@ You will now create a database and container within your Azure Cosmos DB account
    dotnet run
    ```
 
-1. Observe the output from the terminals.
+1. Observe the output from both the terminals.
 
-   > You should see that the second update call fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
+   > The outputs from terminal 1 depicts the correct update while the output in terminal 2 fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
    
-  ![ error status is displayed](./assets/10-output_concurency_failed.jpg "output error")
+  **Terminal 1**
+  ![ proper update](./assets/10-proper_update.jpg "output error")'
+  
+  
+  
+  
+  
+  **Terminal 2**
+  
+  
+  ![ proper update](./assets/10-update_error.jpg "output error")
+  
+  
+  
+  
