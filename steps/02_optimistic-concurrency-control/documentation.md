@@ -8,6 +8,44 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 
 - [Transactions and optimistic concurrency control ](https://learn.microsoft.com/en-us/azure/cosmos-db/sql/database-transactions-optimistic-concurrency) 
 
+## Create Azure Cosmos DB Database and Container
+
+You will now create a database and container within your Azure Cosmos DB account.
+
+1. Navigate to the [Azure Portal](https://portal.azure.com)
+
+1. On the left side of the portal, select the **Resource groups** link.
+
+    ![Resource groups is highlighted](./assets/03-resource_groups.jpg "Select the Resource Groups")
+
+1. In the **Resource groups** blade, locate and select the **cosmoslabs** resource group.
+
+    ![The cosmoslabs resource group is highlighted](./assets/03-lab_resource_group.jpg "Select the cosmoslabs resource group")
+
+1. In the **cosmoslabs** blade, select the **Azure Cosmos DB** account you recently created.
+
+    ![The Cosmos DB resource is highlighted](./assets/03-cosmos_resource.jpg "Select the cosmoslabs resource")
+
+1. In the **Azure Cosmos DB** blade, locate and select the **Overview** link on the left side of the blade. At the top select the **Add Container** button.
+
+    ![Add container link is highlighted](./assets/03-add_collection.jpg "Add a new container")
+
+1. In the **Add Container** popup, perform the following actions:
+
+    1. In the **Database id** field, select the **Create new** option and enter the value **NutritionDatabase**.
+
+    2. Do not check the **Provision database throughput** option.
+
+        > Provisioning throughput for a database allows you to share the throughput among all the containers that belong to that database. Within an Azure Cosmos DB database, you can have a set of containers which shares the throughput as well as containers, which have dedicated throughput.
+
+    3. In the **Container Id** field, enter the value **FoodCollection**.
+
+    4. In the **Partition key** field, enter the value ``/foodGroup``.
+
+    5. Select the **OK** button.
+
+1. Wait for the creation of the new **database** and **container** to finish before moving on with this lab.
+
 ### Create a .NET Core Project
 
 1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **concurrency_lab** folder that will be used to contain the content of your .NET Core project.
