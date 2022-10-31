@@ -134,15 +134,7 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```csharp
    ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
    ```
-
-1. Add a new line of code to update a description and append randomClientNum and incremented i value of the retrieved item:
-
-   ```csharp
-    response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-   ```
-
-   > This line of code will modify a property of the description item. Here we are modifying the description collection property.
-
+  
 1. Add a new line of code inside try block to invoke the **UpsertItemAsync** method passing in both the item and the options:
 
    ```csharp
@@ -158,6 +150,7 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
                 await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
             }
    ```
+ > The first line of code inside the try block will modify a property of the description.
 
 1. Your `Main` method should now look like this:
   ```csharp
