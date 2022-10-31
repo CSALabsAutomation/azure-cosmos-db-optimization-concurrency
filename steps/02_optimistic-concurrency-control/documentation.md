@@ -46,7 +46,7 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 
 1. Select the **Program.cs** link in the **Explorer** pane to open the file in the editor.
 
-   ![The program.cs file is displayed](./assets/10-program-editor.jpg "Open the program.cs file")
+   ![The program.cs file is displayed](./assets/02-program_cs.jpg "Open the program.cs file")
 
  1. Within the Program.cs editor tab, Add the following using blocks to the top of the editor:
 
