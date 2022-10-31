@@ -135,22 +135,6 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
  ```csharp
   int randomClientNum = (new Random()).Next(100, 1000);
  ```
- 1. Implemented try,catch block of code  to handel the exception handeling 
- ```csharp
-    try
-    {
-    }
-    catch 
-    {
-    }
-    
- ```
- 3.Add the following code to loop the same record to update and get Concurrency inside the main
- ```csharp
-         for (int i = 1; i <= 100; i++)
-            {
-            }
- ``` 
 1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id inside the loop
    ```
    for (int i = 1; i <= 100; i++)
