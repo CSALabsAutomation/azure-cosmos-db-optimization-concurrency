@@ -1542,9 +1542,9 @@ Azure Cosmos DB stores data in the following tables.
 
 1.  Enable diagnostics settings 
 
-Prior to using Log Analytics to Analyze Azure Cosmos DB Logs, you must enable diagnostic settings.
+    Prior to using Log Analytics to Analyze Azure Cosmos DB Logs, you must enable diagnostic settings.
 
-There are multiple ways to create the diagnostic settings, the Azure portal, via REST API, PowerShell or via Azure CLI. To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account. Under the **Monitoring** section, choose Diagnostic settings. Choose **+ Add diagnostic setting** to create a new diagnostic setting and choose the logs you wish to collect and chose **Send to Log Analytics Workspace** and select the log analytics workspace and storage account from the drop down.
+    There are multiple ways to create the diagnostic settings, the Azure portal, via REST API, PowerShell or via Azure CLI. To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account. Under the **Monitoring** section, choose Diagnostic settings. Choose **+ Add diagnostic setting** to create a new diagnostic setting and choose the logs you wish to collect and chose **Send to Log Analytics Workspace** and select the log analytics workspace and storage account from the drop down.
 
  ![diagnostics](./assets/09-diag_option.jpg "diagnostics")
  
@@ -1556,76 +1556,76 @@ There are multiple ways to create the diagnostic settings, the Azure portal, via
 
 2.  Trouble shoot issues with resource-specific table queries
 
-When Azure Cosmos DB diagnostics data is sent to Log Analytics, it's sent to either the **AzureDiagnostics** table or to following **Resource-specific** tables. The preferred mode is to send the data to Resource-specific tables, as such each log chosen under the diagnostic settings options will have its own table. Choosing this mode makes it easier to work with the diagnostic data, easier to discover the schemas used, and improve performance in latency and query times.
+    When Azure Cosmos DB diagnostics data is sent to Log Analytics, it's sent to either the **AzureDiagnostics** table or to following **Resource-specific** tables. The preferred mode is to send the data to Resource-specific tables, as such each log chosen under the diagnostic settings options will have its own table. Choosing this mode makes it easier to work with the diagnostic data, easier to discover the schemas used, and improve performance in latency and query times.
 
-**CDBDataPlaneRequests** - Logs back-end requests for operations that execute create, update, delete, or retrieve data.
+    **CDBDataPlaneRequests** - Logs back-end requests for operations that execute create, update, delete, or retrieve data.
 
-**CDBQueryRuntimeStatistics** - Logs details query operations against the NoSQL API account.
+    **CDBQueryRuntimeStatistics** - Logs details query operations against the NoSQL API account.
 
-**CDBPartitionKeyStatistics** - Logs logical partition key statistics in estimated KB. It's helpful when troubleshooting skew storage.
+    **CDBPartitionKeyStatistics** - Logs logical partition key statistics in estimated KB. It's helpful when troubleshooting skew storage.
 
-**CDBPartitionKeyRUConsumption** - Logs every second aggregated RU/s consumption of partition keys. It's helpful when troubleshooting hot partitions.
+    **CDBPartitionKeyRUConsumption** - Logs every second aggregated RU/s consumption of partition keys. It's helpful when troubleshooting hot partitions.
 
-**CDBControlPlaneRequests** - Logs Azure Cosmos DB account control data, for example adding or removing regions in the replication settings.
+    **CDBControlPlaneRequests** - Logs Azure Cosmos DB account control data, for example adding or removing regions in the replication settings.
 
-Navigate to **Logs** link in your Cosmos DB account, open a new query window and execute following example queries and observe results.   
+    Navigate to **Logs** link in your Cosmos DB account, open a new query window and execute following example queries and observe results.   
 
-``` Kusto
-CDBDataPlaneRequests
-| where TimeGenerated >= ago(1h)
-| summarize OperationCount = count(), TotalRequestCharged=sum(todouble(RequestCharge)) by OperationName
-| order by TotalRequestCharged desc
-```
-> Returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
+    ``` Kusto
+    CDBDataPlaneRequests
+    | where TimeGenerated >= ago(1h)
+    | summarize OperationCount = count(), TotalRequestCharged=sum(todouble(RequestCharge)) by OperationName
+    | order by TotalRequestCharged desc
+    ```
+    > Returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
 
-``` Kusto
-CDBDataPlaneRequests 
-| where TimeGenerated >= ago(2h)
-| summarize requestcount=count() by StatusCode, bin(TimeGenerated, 10m)
-| render timechart
-```
+    ``` Kusto
+    CDBDataPlaneRequests 
+    | where TimeGenerated >= ago(2h)
+    | summarize requestcount=count() by StatusCode, bin(TimeGenerated, 10m)
+    | render timechart
+    ```
 
-> Returns a timechart graph for all successful (status 200) and rate limited (status 429) request in the last hour.
+    > Returns a timechart graph for all successful (status 200) and rate limited (status 429) request in the last hour.
 
-Rerun the queries again by adjusting the **Time range** and observe the results. 
+    Rerun the queries again by adjusting the **Time range** and observe the results. 
 
 3.  Troubleshoot issues with diagnostics table(legacy mode) queries
 
-If the legacy mode is chosen, the diagnostics data will be stored in the **``AzureDiagnostics``** table, so all kusto queries will be executed against that table. Enable legacy mode by executing following instructions. 
+    If the legacy mode is chosen, the diagnostics data will be stored in the **``AzureDiagnostics``** table, so all kusto queries will be executed against that table. Enable legacy mode by executing following instructions. 
 
-i. Navigate to your **Diagnostic settings** blade under Monitoring. Click on **Edit setting** option present infront of your diagnostic settings.
+    i. Navigate to your **Diagnostic settings** blade under Monitoring. Click on **Edit setting** option present infront of your diagnostic settings.
 
-![diagnostics1](./assets/09-troubleshoot_edit.jpg "diagnostics options edit ")
-
-
-ii. Edit the destination details by toggling the destination table to **AzureDiagnostics**
-
-![diagnostics2](./assets/09-troubleshoot_diag.jpg "diagnostics options")
+    ![diagnostics1](./assets/09-troubleshoot_edit.jpg "diagnostics options edit ")
 
 
-Since multiple Azure resources could also be populating this table, include the filter **``ResourceProvider=="MICROSOFT.DOCUMENTDB"``** in your ``where`` clause to only return Azure Cosmos DB entries. Additionally, to differentiate between the different logs you picked under **``diagnostic settings``**, add a filter on the **``Category column``**. For example, to return documents for the **``QueryRuntimeStatistics log``**, include the where clause | **``where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="QueryRuntimeStatistics"``**. 
+    ii. Edit the destination details by toggling the destination table to **AzureDiagnostics**
 
-> Kusto is case-sensitive so make sure your column names are the right case. 
-
-Navigate to **Logs** link in your Cosmos DB account, open a new query window and execute following example queries and observe results.   
-
-``` Kusto
-AzureDiagnostics 
-| where TimeGenerated >= ago(1h)
-| where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
-| summarize OperationCount = count(), TotalRequestCharged=sum(todouble(requestCharge_s)) by OperationName
-| order by TotalRequestCharged desc
-```
-> Returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
+    ![diagnostics2](./assets/09-troubleshoot_diag.jpg "diagnostics options")
 
 
-``` Kusto
-AzureDiagnostics 
-| where TimeGenerated >= ago(1h)
-| where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
-| summarize requestcount=count() by statusCode_s, bin(TimeGenerated, 10m)
-| render timechart
-```
-> Returns a timechart graph for all successful (status 200) and rate limited (status 429) requests in the last hour. The requests will be aggregated every 10 minutes.
+    Since multiple Azure resources could also be populating this table, include the filter **``ResourceProvider=="MICROSOFT.DOCUMENTDB"``** in your ``where`` clause to only return Azure Cosmos DB entries. Additionally, to differentiate between the different logs you picked under **``diagnostic settings``**, add a filter on the **``Category column``**. For example, to return documents for the **``QueryRuntimeStatistics log``**, include the where clause | **``where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="QueryRuntimeStatistics"``**. 
 
-Rerun queries by adjusting the **Time range** and observe the results.  
+    > Kusto is case-sensitive so make sure your column names are the right case. 
+
+    Navigate to **Logs** link in your Cosmos DB account, open a new query window and execute following example queries and observe results.   
+
+    ``` Kusto
+    AzureDiagnostics 
+    | where TimeGenerated >= ago(1h)
+    | where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
+    | summarize OperationCount = count(), TotalRequestCharged=sum(todouble(requestCharge_s)) by OperationName
+    | order by TotalRequestCharged desc
+    ```
+    > Returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
+
+
+    ``` Kusto
+    AzureDiagnostics 
+    | where TimeGenerated >= ago(1h)
+    | where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
+    | summarize requestcount=count() by statusCode_s, bin(TimeGenerated, 10m)
+    | render timechart
+    ```
+    > Returns a timechart graph for all successful (status 200) and rate limited (status 429) requests in the last hour. The requests will be aggregated every 10 minutes.
+
+    Rerun queries by adjusting the **Time range** and observe the results.  
