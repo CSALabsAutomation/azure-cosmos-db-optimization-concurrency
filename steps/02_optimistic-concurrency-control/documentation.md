@@ -131,49 +131,22 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
         }
     }
    ```
-1. Add the following Code to Generate random Clientid 
+1. Add the following Code to Generate random Clientid and display 
  ```csharp
   int randomClientNum = (new Random()).Next(100, 1000);
+   await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
  ```
-1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id inside the loop
+ 
+1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id inside the loop and show the current ETag value of the response item
    ```
    for (int i = 1; i <= 100; i++)
    {
    ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
+    await Console.Out.WriteLineAsync($"ETag: {response.ETag}");
    }
    ```
-
-1. Add the following line of code to show the current ETag value of the item:
-
-   ```csharp
-   await Console.Out.WriteLineAsync($"ETag: {response.ETag}");
-   ```
-
     The ETag header and the current value are included in all response messages.
 
-1. Save all of your open editor tabs.
-
-1. In the open terminal pane, enter and execute the following command:
-
-   ```sh
-   dotnet run
-   ```
-
-1. Observe the output of the console application.
-
-   > The ETag should remain unchanged since the item has not been changed.
-
-1. Within the `Main` method, locate the following line of code:
-
-   ```csharp
-   await Console.Out.WriteLineAsync($"ETag:\t{response.ETag}");
-   ```
-
-   Replace that line of code with the following code:
-
-   ```csharp
-   await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
-   ```
 
 1. Next, add a new line of code to create an **ItemRequestOptions** instance that will use the **ETag** from the item and specify an **If-Match** header:
 
