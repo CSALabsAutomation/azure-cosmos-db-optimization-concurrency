@@ -114,7 +114,7 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```
 1. Add the following Code to Generate random Clientid and display 
  ```csharp
-  int randomClientNum = (new Random()).Next(100, 1000);
+   int randomClientNum = (new Random()).Next(100, 1000);
    await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
  ```
  
@@ -122,8 +122,8 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```
    for (int i = 1; i <= 100; i++)
    {
-   ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
-    await Console.Out.WriteLineAsync($"ETag: {response.ETag}");
+    ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
+    await Console.Out.WriteLineAsync($"Existing ETag: {response.ETag}");
    }
    ```
     The ETag header and the current value are included in all response messages.
@@ -141,23 +141,22 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
     response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
    ```
 
-   > This line of code will modify a property of the item. Here we are modifying the **tags** collection property by adding a new **Tag** object.
+   > This line of code will modify a property of the description item. Here we are modifying the description collection property.
 
 1. Add a new line of code inside try block to invoke the **UpsertItemAsync** method passing in both the item and the options:
 
    ```csharp
-   response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-   ```
-1. Add a new line of code inside try block to print out the description of the newley updates value:
-
- ```
- await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
- ```
- 
-1. Add a new line of code inside try block to print out the **ETag** of the newly updated item:
-
-   ```csharp
-   await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+   
+   try      {
+                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+            }
    ```
 
 1. Your `Main` method should now look like this:
@@ -190,39 +189,6 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
            }
           }
         }
-   ```
-
-1. Save all of your open editor tabs.
-
-1. In the open terminal pane, enter and execute the following command:
-
-   ```sh
-   dotnet run
-   ```
-
-1. Observe the output of the console application.
-
-   > You should see that the value of the ETag property has changed. The **ItemRequestOptions** class helped us implement optimistic concurrency by specifying that we wanted the SDK to use the If-Match header to allow the server to decide whether a resource should be updated. The If-Match value is the ETag value to be checked against. If the ETag value matches the server ETag value, the resource is updated. If the ETag is no longer current, the server rejects the operation with an "HTTP 412 Precondition failure" response code. The client then re-fetches the resource to acquire the current ETag value for the resource.
-
-1. Line of code to again invoke the **UpsertItemAsync** method passing in both the updated item and the same options as before:
-
-   ```csharp
-   response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-   ```
-
-   > The **ItemRequestOptions** instance has not been updated, so is still using the ETag value from the original object, which is now out of date so we should expect to now get an error.
-
-1. Add error handling to the **UpsertItemAsync** call you just added by wrapping it with a try-catch and then output the resulting error message. The code should now look like this:
-
-   ```csharp
-   try
-   {
-      response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-   }
-   catch (Exception ex)
-   {
-      await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-   }
    ```
 
 1. Save all of your open editor tabs.
