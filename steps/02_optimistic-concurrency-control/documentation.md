@@ -125,7 +125,22 @@ You will now create a database and container within your Azure Cosmos DB account
    ```csharp
    private static readonly string _primaryKey = "elzirrKCnXlacvh1CRAnQdYVbVLspmYHQyYrhx0PltHi8wn5lHVHFnd1Xm3ad5cn4TUcH4U0MSeHsVykkFPHpQ==";
    ```
+1. Add these classes out side the program class
 
+   ```csharp
+       public class Tag
+        {  
+            public string name { get; set; }
+        }
+
+        public class Food
+        {
+            public string id { get; set; }
+            public string description { get; set; }
+            public List<Tag> tags { get; set; }
+            public string foodGroup { get; set; }
+        }
+   ```
 1. Save all of your open editor tabs.
 
 1. In the open terminal pane, enter and execute the following command:
@@ -151,10 +166,10 @@ You will now create a database and container within your Azure Cosmos DB account
     }
    ```
 1. Add the following Code to Generate random Clientid and display 
- ```csharp
-   int randomClientNum = (new Random()).Next(100, 1000);
-   await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
- ```
+         ```csharp
+           int randomClientNum = (new Random()).Next(100, 1000);
+           await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
+         ```
  
 1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id inside the loop and show the current ETag value of the response item
    ```
@@ -227,18 +242,18 @@ You will now create a database and container within your Azure Cosmos DB account
 
 1. Now your Program.cs file should look like this:
 
-      ```csharp
-            using System;
-            using System.Collections.Generic;
-            using System.Threading.Tasks;
-            using Microsoft.Azure.Cosmos;
+ ```csharp
+        using System;
+        using System.Collections.Generic;
+        using System.Threading.Tasks;
+        using Microsoft.Azure.Cosmos;
 
-            public class Program
-            {
-                private static readonly string _endpointUri = "https://cosmosdb3rdcnrk.documents.azure.com:443/";
-                private static readonly string _primaryKey = "SVpgeB8Wta4HopefFmUH9woIJaHAAItDs1kRiFLSyCBbHCwg9NRCew581gSnT82p3Kk1xwU6P3IHJ36lMzqI2Q==";
-                private static readonly string _databaseId = "NutritionDatabase";
-                private static readonly string _containerId = "FoodCollection";
+        public class Program
+        {
+            private static readonly string _endpointUri = "https://cosmosdb3rdcnrk.documents.azure.com:443/";
+            private static readonly string _primaryKey = "SVpgeB8Wta4HopefFmUH9woIJaHAAItDs1kRiFLSyCBbHCwg9NRCew581gSnT82p3Kk1xwU6P3IHJ36lMzqI2Q==";
+            private static readonly string _databaseId = "NutritionDatabase";
+            private static readonly string _containerId = "FoodCollection";
 
                 public static async Task Main(string[] args)
                 {
@@ -246,30 +261,44 @@ You will now create a database and container within your Azure Cosmos DB account
                     {
                         var database = client.GetDatabase(_databaseId);
                         var container = database.GetContainer(_containerId);
-                           int randomClientNum = (new Random()).Next(100, 1000);
-                      for (int i = 1; i <= 100; i++)
-                       {
+                        int randomClientNum = (new Random()).Next(100, 1000);
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
+                        Console.ForegroundColor=ConsoleColor.White;
+                        for (int i = 1; i <= 10; i++)
+                        {
                             ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
                             await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
                         ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-                         try
-                           {
-                                 response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-                                 response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-                                 await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
-                                 await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-                           }
-                           catch (Exception ex)
-                           {
-                               await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-                           }
-                       }
-                     }
-                  }
-
+                      try
+                        {
+                              response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                              response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                              await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                              await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+                        }
+                        catch (Exception ex)
+                        {
+                            await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+                        }
+                            }
+                        }
+                    }  
+    }
+            public class Tag
+            {  
+                public string name { get; set; }
             }
-         ```
+
+            public class Food
+            {
+                public string id { get; set; }
+                public string description { get; set; }
+                public List<Tag> tags { get; set; }
+                public string foodGroup { get; set; }
+            }
+ ```
 
 1. Open 2 terminals, enter and execute the following command in both the terminals.
 
