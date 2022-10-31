@@ -195,14 +195,14 @@ You will now create a database and container within your Azure Cosmos DB account
    
    try     
    {
-                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
-                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+       response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+       response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+       await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+       await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
    }
    catch (Exception ex)
    {
-                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+       await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
    }
    ```
    
