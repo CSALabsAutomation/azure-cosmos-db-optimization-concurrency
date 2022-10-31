@@ -97,7 +97,7 @@ You will now create a database and container within your Azure Cosmos DB account
 1. Within the Program class, add the following lines of code which creates variables for your connection information and Cosmos client. Database and Container info has to be added. Also **main()** method structure has to be added as given below.
    
    ```sh
-    public class Program
+   public class Program
    {
          private static readonly string _endpointUri = "<your uri>";
          private static readonly string _primaryKey = "<your key>";
@@ -125,7 +125,7 @@ You will now create a database and container within your Azure Cosmos DB account
    ```csharp
    private static readonly string _primaryKey = "elzirrKCnXlacvh1CRAnQdYVbVLspmYHQyYrhx0PltHi8wn5lHVHFnd1Xm3ad5cn4TUcH4U0MSeHsVykkFPHpQ==";
    ```
-1. Add these classes out side the program class
+1. Add these lines of code outside the program class
 
    ```csharp
        public class Tag
@@ -156,23 +156,24 @@ You will now create a database and container within your Azure Cosmos DB account
 1. Locate the `Main()` method and add these lines:
 
    ```csharp
-   public static async Task Main(string[] args)
-    {
-    using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
-        {
-        Database database = _client.GetDatabase(_databaseId);
-        Container container = database.GetContainer(_containerId);
-        }
-    }
+           public static async Task Main(string[] args)
+            {
+            using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+                {
+                Database database = _client.GetDatabase(_databaseId);
+                Container container = database.GetContainer(_containerId);
+                }
+            }
    ```
-1. Add the following Code to Generate random Clientid and display 
-         ```csharp
+1. Add the following Code to Generate random Clientid and display.
+
+   ```csharp 
            int randomClientNum = (new Random()).Next(100, 1000);
-           await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
-         ```
- 
-1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id inside the loop and show the current ETag value of the response item
+           await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);           
    ```
+ 
+1. Add the following code to asynchronously read a single item from the container, identifying by its partition key and id inside the loop and show the current ETag value of the response item
+   ```csharp
    for (int i = 1; i <= 100; i++)
    {
     ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
@@ -214,10 +215,13 @@ You will now create a database and container within your Azure Cosmos DB account
             {
                 using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
                 {
-                    var database = client.GetDatabase(_databaseId);
-                    var container = database.GetContainer(_containerId);
-                    int randomClientNum = (new Random()).Next(100, 1000);
-                    for (int i = 1; i <= 100; i++)
+                     var database = client.GetDatabase(_databaseId);
+                     var container = database.GetContainer(_containerId);
+                     int randomClientNum = (new Random()).Next(100, 1000);
+                     Console.ForegroundColor = ConsoleColor.Yellow;
+                     await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
+                     Console.ForegroundColor=ConsoleColor.White;
+                    for (int i = 1; i <= 1000; i++)
                     {
                         ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
                         await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
@@ -265,7 +269,7 @@ You will now create a database and container within your Azure Cosmos DB account
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
                         Console.ForegroundColor=ConsoleColor.White;
-                        for (int i = 1; i <= 10; i++)
+                        for (int i = 1; i <= 1000; i++)
                         {
                             ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
                             await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
@@ -285,7 +289,7 @@ You will now create a database and container within your Azure Cosmos DB account
                             }
                         }
                     }  
-    }
+         }
             public class Tag
             {  
                 public string name { get; set; }
