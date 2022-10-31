@@ -135,110 +135,111 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
    ```
   
-1. Add a new line of code inside try block to invoke the **UpsertItemAsync** method passing in both the item and the options:
+1. Add  these lines of code inside try block to invoke the **UpsertItemAsync** method passing in both the item and the options:
 
    ```csharp
    
-   try      {
+   try     
+   {
                   response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
                   response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
                   await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
                   await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-            }
-            catch (Exception ex)
-            {
+   }
+   catch (Exception ex)
+   {
                 await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-            }
+   }
    ```
- > The first line of code inside the try block will modify a property of the description.
+   
+     > The first line of code inside the try block will modify a property of the description.
 
 1. Your `Main` method should now look like this:
-  ```csharp
-   
-  public static async Task Main(string[] args)
-    {
-        using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
-        {
-            var database = client.GetDatabase(_databaseId);
-            var container = database.GetContainer(_containerId);
-            int randomClientNum = (new Random()).Next(100, 1000);
-            for (int i = 1; i <= 100; i++)
-            {
-                ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
-                await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
+     ```csharp
 
-          ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-          try
+        public static async Task Main(string[] args)
             {
-                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
-                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-            }
-            catch (Exception ex)
-            {
-                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-            }
-           }
-          }
-        }
-   ```
+                using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+                {
+                    var database = client.GetDatabase(_databaseId);
+                    var container = database.GetContainer(_containerId);
+                    int randomClientNum = (new Random()).Next(100, 1000);
+                    for (int i = 1; i <= 100; i++)
+                    {
+                        ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                        await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
+                  ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
+                  try
+                    {
+                          response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                          response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                          await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                          await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+                    }
+                    catch (Exception ex)
+                    {
+                        await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+                    }
+                   }
+                  }
+                }
+      ```
 1. Save all of your open editor tabs.
 
-1. At end of this point, your Program.cs file should look like this:
+1. Now your Program.cs file should look like this:
 
-```csharp
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Azure.Cosmos;
+      ```csharp
+            using System;
+            using System.Collections.Generic;
+            using System.Threading.Tasks;
+            using Microsoft.Azure.Cosmos;
 
-public class Program
-{
-    private static readonly string _endpointUri = "https://cosmosdb3rdcnrk.documents.azure.com:443/";
-    private static readonly string _primaryKey = "SVpgeB8Wta4HopefFmUH9woIJaHAAItDs1kRiFLSyCBbHCwg9NRCew581gSnT82p3Kk1xwU6P3IHJ36lMzqI2Q==";
-    private static readonly string _databaseId = "NutritionDatabase";
-    private static readonly string _containerId = "FoodCollection";
+            public class Program
+            {
+                private static readonly string _endpointUri = "https://cosmosdb3rdcnrk.documents.azure.com:443/";
+                private static readonly string _primaryKey = "SVpgeB8Wta4HopefFmUH9woIJaHAAItDs1kRiFLSyCBbHCwg9NRCew581gSnT82p3Kk1xwU6P3IHJ36lMzqI2Q==";
+                private static readonly string _databaseId = "NutritionDatabase";
+                private static readonly string _containerId = "FoodCollection";
 
-    public static async Task Main(string[] args)
-    {
-        using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
-        {
-            var database = client.GetDatabase(_databaseId);
-            var container = database.GetContainer(_containerId);
-               int randomClientNum = (new Random()).Next(100, 1000);
-          for (int i = 1; i <= 100; i++)
-           {
-                ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
-                await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
+                public static async Task Main(string[] args)
+                {
+                    using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+                    {
+                        var database = client.GetDatabase(_databaseId);
+                        var container = database.GetContainer(_containerId);
+                           int randomClientNum = (new Random()).Next(100, 1000);
+                      for (int i = 1; i <= 100; i++)
+                       {
+                            ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                            await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
-            ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-             try
-               {
-                     response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-                     response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-                     await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
-                     await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-               }
-               catch (Exception ex)
-               {
-                   await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-               }
-           }
-         }
-      }
-   
-}
-```
+                        ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
+                         try
+                           {
+                                 response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                                 response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                                 await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                                 await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+                           }
+                           catch (Exception ex)
+                           {
+                               await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+                           }
+                       }
+                     }
+                  }
 
-22. Open 2 terminals, enter and execute the following command in both the terminals.
+            }
+         ```
+
+1. Open 2 terminals, enter and execute the following command in both the terminals.
 
    ```sh
    dotnet run
    ```
 
-23. Observe the output from the terminals.
+1. Observe the output from the terminals.
 
    > You should see that the second update call fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
    
