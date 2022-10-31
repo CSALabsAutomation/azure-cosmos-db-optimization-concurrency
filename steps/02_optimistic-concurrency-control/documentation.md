@@ -43,6 +43,39 @@ You will now create a database and container within your Azure Cosmos DB account
     4. In the **Partition key** field, enter the value ``/foodGroup``.
 
     5. Select the **OK** button.
+    
+    6.Click on the item under food Collection Container.Then click on new item and copy paste the below item, click on save
+   
+    ```
+                    {
+                    "id": "024108",
+                    "description": "Babyfood, dessert, peach cobbler, junior",
+                    "tags": [
+                        {
+                            "name": "babyfood"
+                        }        
+                    ],
+                    "version": 1,
+                    "isFromSurvey": false,
+                    "foodGroup": "Baby Foods",
+                    "nutrients": [
+                        {
+                            "id": "291",
+                            "description": "Fiber, total dietary",
+                            "nutritionValue": 0.7,
+                            "units": "g"
+                        }
+                    ],
+                    "servings": [
+                        {
+                            "amount": 1,
+                            "description": "jar Gerber Third Foods (6 oz)",
+                            "weightInGrams": 170
+                        }
+                    ],
+
+                }
+    ```
 
 1. Wait for the creation of the new **database** and **container** to finish before moving on with this lab.
 
@@ -174,7 +207,7 @@ You will now create a database and container within your Azure Cosmos DB account
  
 1. Add the following code to asynchronously read a single item from the container, identifying by its partition key and id inside the loop and show the current ETag value of the response item
    ```csharp
-   for (int i = 1; i <= 100; i++)
+   for (int i = 1; i <= 100000; i++)
    {
     ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
     await Console.Out.WriteLineAsync($"Existing ETag: {response.ETag}");
@@ -221,7 +254,7 @@ You will now create a database and container within your Azure Cosmos DB account
                      Console.ForegroundColor = ConsoleColor.Yellow;
                      await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
                      Console.ForegroundColor=ConsoleColor.White;
-                    for (int i = 1; i <= 1000; i++)
+                    for (int i = 1; i <= 100000; i++)
                     {
                         ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
                         await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
@@ -269,7 +302,7 @@ You will now create a database and container within your Azure Cosmos DB account
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
                         Console.ForegroundColor=ConsoleColor.White;
-                        for (int i = 1; i <= 1000; i++)
+                        for (int i = 1; i <= 1000000; i++)
                         {
                             ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
                             await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
@@ -312,7 +345,7 @@ You will now create a database and container within your Azure Cosmos DB account
 
 1. Observe the output from both the terminals.
 
-   > The outputs from terminal 1 depicts the correct update while the output in terminal 2 fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
+   > The outputs from terminal with client id  depicts the correct update while the output in terminal 2 fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
    
   **Terminal 1**
   ![ proper update](./assets/10-proper_update.jpg "output error")'
