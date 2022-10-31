@@ -10,13 +10,14 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 
 ### Create a .NET Core Project
 
-1. Create **Lab10** folder that will be used to contain the content of your .NET Core project.
+1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **concurrency_lab** folder that will be used to contain the content of your .NET Core project.
+    
+1. In the **concurrency_lab** folder, right-click the folder and select the **Open with Code** menu option.
 
-1. In the `Lab10` folder, right-click the folder and select the **Open with Code** menu option.
 
-   > Alternatively, you can run a terminal in your current directory and execute the `code .` command.
+1. In the Visual Studio Code window that appears, right-click the **Explorer** pane and select the **Open in integrated Terminal** menu option.
 
-1. In the Visual Studio Code window that appears, right-click the **Explorer** pane and select the **Open in Terminal** menu option.
+    ![Open in Terminal is highlighted](./assets/02-concurrency_terminal.jpg "Open a terminal in Visual Studio Code")
 
 1. In the open terminal pane, enter and execute the following command:
 
@@ -24,7 +25,14 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
     dotnet new console
     ```
 
-    > This command will create a new .NET Core project. The project will be a **console** project. 
+    > This command will create a new .NET Core project. The project will be a **console** project and it creates Program.cs file.
+    
+    > You will see the below code in Program.cs and make sure you delete the existing below lines .
+    
+    ```sh
+       //See https://aka.ms/new-console-template for more information 
+       Console.WriteLine("Hello, World!"); 
+    ```
 
 1. Visual Studio Code will most likely prompt you to install various extensions related to **.NET Core** or **Azure Cosmos DB** development. None of these extensions are required to complete the labs.
 
@@ -35,33 +43,6 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
     ```
 
     > This command will add the [Microsoft.Azure.Cosmos](https://www.nuget.org/packages/Microsoft.Azure.Cosmos/) NuGet package as a project dependency. The lab instructions have been tested using the `3.12.0` version of this NuGet package.
-
-1. In the terminal pane, enter and execute the following command:
-
-    ```sh
-    dotnet add package Bogus --version 30.0.2
-    ```
-
-    > This command will add the [Bogus](./assets/https://www.nuget.org/packages/Bogus/) NuGet package as a project dependency. This library will allow us to quickly generate test data using a fluent syntax and minimal code. We will use this library to generate test documents to upload to our Azure Cosmos DB instance. The lab instructions have been tested using the `30.0.2` version of this NuGet package.
-
-1. In the terminal pane, enter and execute the following command:
-
-    ```sh
-    dotnet restore
-    ```
-
-    > This command will restore all packages specified as dependencies in the project.
-
-1. In the terminal pane, enter and execute the following command:
-
-    ```sh
-    dotnet build
-    ```
-
-    > This command will build the project.
-
-
-1. In the **Explorer** pane verify that you have a **DataTypes.cs** file in your project folder. This file contains the data classes you will be working with in the following steps.
 
 1. Select the **Program.cs** link in the **Explorer** pane to open the file in the editor.
 
