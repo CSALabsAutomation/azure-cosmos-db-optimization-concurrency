@@ -8,6 +8,44 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 
 - [Transactions and optimistic concurrency control ](https://learn.microsoft.com/en-us/azure/cosmos-db/sql/database-transactions-optimistic-concurrency) 
 
+## Create Azure Cosmos DB Database and Container
+
+You will now create a database and container within your Azure Cosmos DB account.
+
+1. Navigate to the [Azure Portal](https://portal.azure.com)
+
+1. On the left side of the portal, select the **Resource groups** link.
+
+    ![Resource groups is highlighted](./assets/03-resource_groups.jpg "Select the Resource Groups")
+
+1. In the **Resource groups** blade, locate and select the **cosmoslabs** resource group.
+
+    ![The cosmoslabs resource group is highlighted](./assets/03-lab_resource_group.jpg "Select the cosmoslabs resource group")
+
+1. In the **cosmoslabs** blade, select the **Azure Cosmos DB** account you recently created.
+
+    ![The Cosmos DB resource is highlighted](./assets/03-cosmos_resource.jpg "Select the cosmoslabs resource")
+
+1. In the **Azure Cosmos DB** blade, locate and select the **Overview** link on the left side of the blade. At the top select the **Add Container** button.
+
+    ![Add container link is highlighted](./assets/03-add_collection.jpg "Add a new container")
+
+1. In the **Add Container** popup, perform the following actions:
+
+    1. In the **Database id** field, select the **Create new** option and enter the value **NutritionDatabase**.
+
+    2. Do not check the **Provision database throughput** option.
+
+        > Provisioning throughput for a database allows you to share the throughput among all the containers that belong to that database. Within an Azure Cosmos DB database, you can have a set of containers which shares the throughput as well as containers, which have dedicated throughput.
+
+    3. In the **Container Id** field, enter the value **FoodCollection**.
+
+    4. In the **Partition key** field, enter the value ``/foodGroup``.
+
+    5. Select the **OK** button.
+
+1. Wait for the creation of the new **database** and **container** to finish before moving on with this lab.
+
 ### Create a .NET Core Project
 
 1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **concurrency_lab** folder that will be used to contain the content of your .NET Core project.
@@ -59,7 +97,7 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 1. Within the Program class, add the following lines of code which creates variables for your connection information and Cosmos client. Database and Container info has to be added. Also **main()** method structure has to be added as given below.
    
    ```sh
-    public class Program
+   public class Program
    {
          private static readonly string _endpointUri = "<your uri>";
          private static readonly string _primaryKey = "<your key>";
@@ -87,7 +125,22 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```csharp
    private static readonly string _primaryKey = "elzirrKCnXlacvh1CRAnQdYVbVLspmYHQyYrhx0PltHi8wn5lHVHFnd1Xm3ad5cn4TUcH4U0MSeHsVykkFPHpQ==";
    ```
+1. Add these lines of code outside the program class
 
+   ```csharp
+       public class Tag
+        {  
+            public string name { get; set; }
+        }
+
+        public class Food
+        {
+            public string id { get; set; }
+            public string description { get; set; }
+            public List<Tag> tags { get; set; }
+            public string foodGroup { get; set; }
+        }
+   ```
 1. Save all of your open editor tabs.
 
 1. In the open terminal pane, enter and execute the following command:
@@ -103,23 +156,24 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
 1. Locate the `Main()` method and add these lines:
 
    ```csharp
-   public static async Task Main(string[] args)
-    {
-    using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
-        {
-        Database database = _client.GetDatabase(_databaseId);
-        Container container = database.GetContainer(_containerId);
-        }
-    }
+           public static async Task Main(string[] args)
+            {
+            using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+                {
+                Database database = _client.GetDatabase(_databaseId);
+                Container container = database.GetContainer(_containerId);
+                }
+            }
    ```
-1. Add the following Code to Generate random Clientid and display 
- ```csharp
-   int randomClientNum = (new Random()).Next(100, 1000);
-   await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
- ```
+1. Add the following Code to Generate random Clientid and display.
+
+   ```csharp 
+           int randomClientNum = (new Random()).Next(100, 1000);
+           await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);           
+   ```
  
-1. Add the following code to asynchronously read a single item from the container, identified by its partition key and id inside the loop and show the current ETag value of the response item
-   ```
+1. Add the following code to asynchronously read a single item from the container, identifying by its partition key and id inside the loop and show the current ETag value of the response item
+   ```csharp
    for (int i = 1; i <= 100; i++)
    {
     ItemResponse<Food> response = await container.ReadItemAsync<Food>("21083", new PartitionKey("Fast Foods"));
@@ -134,118 +188,129 @@ The SQL API supports optimistic concurrency control (OCC) through HTTP entity ta
    ```csharp
    ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
    ```
-
-1. Add a new line of code to update a description and append randomClientNum and incremented i value of the retrieved item:
-
-   ```csharp
-    response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-   ```
-
-   > This line of code will modify a property of the description item. Here we are modifying the description collection property.
-
-1. Add a new line of code inside try block to invoke the **UpsertItemAsync** method passing in both the item and the options:
+  
+1. Add  these lines of code inside try block to invoke the **UpsertItemAsync** method passing in both the item and the options:
 
    ```csharp
    
-   try      {
-                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
-                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-            }
-            catch (Exception ex)
-            {
-                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-            }
+   try     
+   {
+       response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+       response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+       await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+       await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+   }
+   catch (Exception ex)
+   {
+       await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+   }
    ```
+   
+     > The first line of code inside the try block will modify a property of the description.
 
 1. Your `Main` method should now look like this:
-  ```csharp
-   
-  public static async Task Main(string[] args)
-    {
-        using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
-        {
-            var database = client.GetDatabase(_databaseId);
-            var container = database.GetContainer(_containerId);
-            int randomClientNum = (new Random()).Next(100, 1000);
-            for (int i = 1; i <= 100; i++)
-            {
-                ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
-                await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
+     ```csharp
 
-          ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-          try
+        public static async Task Main(string[] args)
             {
-                  response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-                  response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-                  await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
-                  await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-            }
-            catch (Exception ex)
-            {
-                await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-            }
-           }
-          }
-        }
-   ```
+                using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+                {
+                     var database = client.GetDatabase(_databaseId);
+                     var container = database.GetContainer(_containerId);
+                     int randomClientNum = (new Random()).Next(100, 1000);
+                     Console.ForegroundColor = ConsoleColor.Yellow;
+                     await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
+                     Console.ForegroundColor=ConsoleColor.White;
+                    for (int i = 1; i <= 1000; i++)
+                    {
+                        ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                        await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
+                  ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
+                  try
+                    {
+                          response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                          response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                          await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                          await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+                    }
+                    catch (Exception ex)
+                    {
+                        await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+                    }
+                   }
+                  }
+                }
+      ```
 1. Save all of your open editor tabs.
 
-1. At end of this point, your Program.cs file should look like this:
+1. Now your Program.cs file should look like this:
 
-```csharp
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Azure.Cosmos;
+ ```csharp
+        using System;
+        using System.Collections.Generic;
+        using System.Threading.Tasks;
+        using Microsoft.Azure.Cosmos;
 
-public class Program
-{
-    private static readonly string _endpointUri = "https://cosmosdb3rdcnrk.documents.azure.com:443/";
-    private static readonly string _primaryKey = "SVpgeB8Wta4HopefFmUH9woIJaHAAItDs1kRiFLSyCBbHCwg9NRCew581gSnT82p3Kk1xwU6P3IHJ36lMzqI2Q==";
-    private static readonly string _databaseId = "NutritionDatabase";
-    private static readonly string _containerId = "FoodCollection";
-
-    public static async Task Main(string[] args)
-    {
-        using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+        public class Program
         {
-            var database = client.GetDatabase(_databaseId);
-            var container = database.GetContainer(_containerId);
-               int randomClientNum = (new Random()).Next(100, 1000);
-          for (int i = 1; i <= 100; i++)
-           {
-                ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
-                await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
+            private static readonly string _endpointUri = "https://cosmosdb3rdcnrk.documents.azure.com:443/";
+            private static readonly string _primaryKey = "SVpgeB8Wta4HopefFmUH9woIJaHAAItDs1kRiFLSyCBbHCwg9NRCew581gSnT82p3Kk1xwU6P3IHJ36lMzqI2Q==";
+            private static readonly string _databaseId = "NutritionDatabase";
+            private static readonly string _containerId = "FoodCollection";
 
-            ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
-             try
-               {
-                     response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
-                     response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
-                     await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
-                     await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
-               }
-               catch (Exception ex)
-               {
-                   await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
-               }
-           }
+                public static async Task Main(string[] args)
+                {
+                    using (CosmosClient client = new CosmosClient(_endpointUri, _primaryKey))
+                    {
+                        var database = client.GetDatabase(_databaseId);
+                        var container = database.GetContainer(_containerId);
+                        int randomClientNum = (new Random()).Next(100, 1000);
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        await Console.Out.WriteLineAsync($"Executing client with client id : "+randomClientNum);
+                        Console.ForegroundColor=ConsoleColor.White;
+                        for (int i = 1; i <= 1000; i++)
+                        {
+                            ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                            await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
+
+                        ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
+                      try
+                        {
+                              response.Resource.description = "Updated from  client : " + randomClientNum + "= " + i;
+                              response = await container.UpsertItemAsync(response.Resource, requestOptions: requestOptions);
+                              await Console.Out.WriteLineAsync($"Description :\t{response.Resource.description}");
+                              await Console.Out.WriteLineAsync($"New ETag:\t{response.ETag}");
+                        }
+                        catch (Exception ex)
+                        {
+                            await Console.Out.WriteLineAsync($"Update error:\t{ex.Message}");
+                        }
+                            }
+                        }
+                    }  
          }
-      }
-   
-}
-```
+            public class Tag
+            {  
+                public string name { get; set; }
+            }
 
-22. Open 2 terminals, enter and execute the following command in both the terminals.
+            public class Food
+            {
+                public string id { get; set; }
+                public string description { get; set; }
+                public List<Tag> tags { get; set; }
+                public string foodGroup { get; set; }
+            }
+ ```
+
+1. Open 2 terminals, enter and execute the following command in both the terminals.
 
    ```sh
    dotnet run
    ```
 
-23. Observe the output from the terminals.
+1. Observe the output from the terminals.
 
    > You should see that the second update call fails because value of the ETag property has changed. The **ItemRequestOptions** class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
    
