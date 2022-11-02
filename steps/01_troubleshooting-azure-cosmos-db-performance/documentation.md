@@ -852,7 +852,7 @@ You will now tune your requests to Azure Cosmos DB by manipulating the SQL query
 
 ### Managing SDK Query Options
 
-1. Locate the `CreateTransactions` method and delete the code added for the previous section so it again looks like this:
+1. Locate the `QueryTransactions` method and delete the code added for the previous section so it again looks like this:
 
     ```csharp
     private static async Task QueryTransactions(Container transactionContainer)
