@@ -183,7 +183,7 @@ Wait till the container, database and the item are created.
    dotnet build
    ```
 
-### Observe the ETag Property
+### Implement Optimistic Concurrency Control(OCC) using the ETag Property
 
 1. Select the **Program.cs** link in the **Explorer** pane to open the file in the editor.
 
@@ -340,33 +340,25 @@ Wait till the container, database and the item are created.
             }
  ```
 
-1. Open 2 terminals, enter and execute the following command in both the terminals.
+1. Open 2 terminals, go to the program location and enter and execute the following command in both the terminals.
+   
 
    ```sh
    dotnet run
    ```
+   
+   Two instances of the program will try to update item with id "04002" concurrently. 
 
 1. Observe the output from 2 the terminals.
   
-  You should see that the second update call fails because value of the ETag property has changed. The ItemRequestOptions class specifying the original ETag value as an If-Match header caused the server to decide to reject the update operation with an "HTTP 412 Precondition failure" response code.
+  After a while, you should see that the second program execution failing because ETag property was changed by an update performed from the first program execution simultaneously. If-Match header on ETag causes the server to reject the concurrent update operation with an "HTTP 412 Precondition failure" response code, preventing loss of update made by the first instance.  
    
-  **Terminal 1**
-  
-  
+  #### Output from terminal 1
+    
   ![ proper update](./assets/10-proper_update.jpg "output error")'
+     
+  #### Output from terminal 2
+    
   
-  
-  
-  
-  
-  
-  
-  **Terminal 2**
-  
-  
-  
-  ![ proper update](./assets/10-update_error.jpg "output error")
-  
-  
-  
+  ![ proper update](./assets/10-update_error.jpg "output error")  
   
