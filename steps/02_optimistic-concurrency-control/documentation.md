@@ -1,8 +1,9 @@
 # Optimistic Concurrency Control
+Optimistic concurrency control allows you to prevent lost updates and deletes. When two concurrent operations attempt to update the latest version of an item within a logical partition, one of them will win and the other will fail. This situation can be detected with the Optimistic Concurrency Control (OCC) before letting the two operations enter the transaction boundary inside the database engine. OCC protects your data from accidentally overwriting changes that were made by others. It also prevents others from accidentally overwriting your own changes
 
 ## Viewing the ETag Property of a Requested Resource
 
-The SQL API supports optimistic concurrency control (OCC) through HTTP entity tags, or ETags. Every SQL API resource has an ETag, and the ETag is set on the server every time an item is updated. In this exercise, we will view the ETag property of a resource that is requested using the SDK.
+The SQL API supports optimistic concurrency control (OCC) through HTTP entity tags, or ETags. Every SQL API resource has an ETag, and the ETag is set on the server every time an item is updated. In this exercise, we will view the ETag property of a resource that is requested using the SDK and its use it for implementing OCC.
 
 ### Recommended Prerequisites 
 
@@ -77,7 +78,7 @@ You will now create a database and container within your Azure Cosmos DB account
                 }
     ```
 
-1. Wait for the creation of the new **database** and **container** to finish before moving on with this lab.
+Wait till the container, database and the item are created.
 
 ### Create a .NET Core Project
 
