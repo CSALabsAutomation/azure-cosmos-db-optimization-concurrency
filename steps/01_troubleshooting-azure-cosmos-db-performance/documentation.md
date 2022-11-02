@@ -8,10 +8,9 @@ In this lab, you will use the .NET SDK to tune Azure Cosmos DB requests to optim
 - [Configure Azure Cosmos DB SQL API database and containers](https://learn.microsoft.com/en-gb/training/modules/configure-azure-cosmos-db-sql-api/)
 - [Monitor and troubleshoot an Azure Cosmos DB for NoSQL solution](https://learn.microsoft.com/en-gb/training/paths/monitor-troubleshoot-azure-cosmos-db-sql-api-solution/)
 
+## Create Azure Cosmos DB Database and Container
 
-## Create a .NET Core Project
-
-1. Create **Lab09** folder that will be used to contain the content of your .NET Core project.
+You will now create a database and container within your Azure Cosmos DB account.
 
 1. Switch to the Azure Portal (http://portal.azure.com).
 
@@ -37,19 +36,30 @@ In this lab, you will use the .NET SDK to tune Azure Cosmos DB requests to optim
 
 1. Select the OK button, Wait for the creation of the new database and container to finish before moving on with this lab.
 
-1. In the `Lab09` folder, right-click the folder and select the **Open with Code** menu option.
+## Create a .NET Core Project
+
+1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **performance_lab** folder that will be used to contain the content of your .NET Core project.
+
+1. In the `performance_lab` folder, right-click the folder and select the **Open with Code** menu option.
 
     > Alternatively, you can run a terminal in your current directory and execute the ``code .`` command.
 
 1. In the Visual Studio Code window that appears, right-click the **Explorer** pane and select the **Open in Terminal** menu option.
+      ![Open in Terminal is highlighted](./assets/01-concurrency_terminal.jpg "Open a terminal in Visual Studio Code")
 
 1. In the open terminal pane, enter and execute the following command:
 
     ```sh
     dotnet new console
     ```
-
-    > This command will create a new .NET Core project. The project will be a **console** project. 
+     > This command will create a new .NET Core project. The project will be a **console** project and it creates Program.cs file.
+    
+    > You will see the below code in Program.cs and make sure you delete the existing below lines .
+    
+    ```sh
+       //See https://aka.ms/new-console-template for more information 
+       Console.WriteLine("Hello, World!"); 
+    ```
 
 1. Visual Studio Code will most likely prompt you to install various extensions related to **.NET Core** or **Azure Cosmos DB** development. None of these extensions are required to complete the labs.
 
