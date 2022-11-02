@@ -6,11 +6,11 @@ In this lab, you will use the .NET SDK to tune Azure Cosmos DB requests to optim
 
 - [Measure performance in Azure Cosmos DB SQL API](https://learn.microsoft.com/en-gb/training/modules/measure-performance-azure-cosmos-db-sql-api/) 
 - [Configure Azure Cosmos DB SQL API database and containers](https://learn.microsoft.com/en-gb/training/modules/configure-azure-cosmos-db-sql-api/)
+- [Monitor and troubleshoot an Azure Cosmos DB for NoSQL solution](https://learn.microsoft.com/en-gb/training/paths/monitor-troubleshoot-azure-cosmos-db-sql-api-solution/)
 
+## Create Azure Cosmos DB Database and Container
 
-## Create a .NET Core Project
-
-1. Create **Lab09** folder that will be used to contain the content of your .NET Core project.
+You will now create a database and container within your Azure Cosmos DB account.
 
 1. Switch to the Azure Portal (http://portal.azure.com).
 
@@ -36,19 +36,30 @@ In this lab, you will use the .NET SDK to tune Azure Cosmos DB requests to optim
 
 1. Select the OK button, Wait for the creation of the new database and container to finish before moving on with this lab.
 
-1. In the `Lab09` folder, right-click the folder and select the **Open with Code** menu option.
+## Create a .NET Core Project
+
+1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **performance_lab** folder that will be used to contain the content of your .NET Core project.
+
+1. In the `performance_lab` folder, right-click the folder and select the **Open with Code** menu option.
 
     > Alternatively, you can run a terminal in your current directory and execute the ``code .`` command.
 
 1. In the Visual Studio Code window that appears, right-click the **Explorer** pane and select the **Open in Terminal** menu option.
+      ![Open in Terminal is highlighted](./assets/01-concurrency_terminal.jpg "Open a terminal in Visual Studio Code")
 
 1. In the open terminal pane, enter and execute the following command:
 
     ```sh
     dotnet new console
     ```
-
-    > This command will create a new .NET Core project. The project will be a **console** project. 
+     > This command will create a new .NET Core project. The project will be a **console** project and it creates Program.cs file.
+    
+    > You will see the below code in Program.cs and make sure you delete the existing below lines .
+    
+    ```sh
+       //See https://aka.ms/new-console-template for more information 
+       Console.WriteLine("Hello, World!"); 
+    ```
 
 1. Visual Studio Code will most likely prompt you to install various extensions related to **.NET Core** or **Azure Cosmos DB** development. None of these extensions are required to complete the labs.
 
@@ -851,7 +862,7 @@ You will now tune your requests to Azure Cosmos DB by manipulating the SQL query
 
 ### Managing SDK Query Options
 
-1. Locate the `CreateTransactions` method and delete the code added for the previous section so it again looks like this:
+1. Locate the `QueryTransactions` method and delete the code added for the previous section so it again looks like this:
 
     ```csharp
     private static async Task QueryTransactions(Container transactionContainer)
@@ -1478,3 +1489,157 @@ Many applications have workloads that vary over time in a predictable way. For e
 1. In the **Settings** section, locate the **Throughput** field and note that is is now set to **1000**.
 
 > Note that you may need to refresh the Data Explorer to see the new value.
+
+## Monitoring and Logging in Azure Cosmos DB
+
+You can maximize the availability and performance of you Cosmos DB applications by leveraging monitoring and logging capabilities provideded by Azure. You can monitor your data with client-side or server-side metrics. When using server-side metrics, you can monitor the data stored in Azure Cosmos DB with the following options:
+
+1. **Monitor from Azure Cosmos DB portal** : You can monitor with the metrics available within the Metrics tab of the Azure Cosmos DB account. The metrics on this tab include throughput, storage, availability, latency, consistency, and system level metrics. 
+
+1. **Monitor with metrics in Azure monitor**: You can monitor the metrics of your Azure Cosmos DB account and create dashboards from the Azure Monitor. Azure Monitor collects the Azure Cosmos DB metrics by default, you dont need to explicitly configure anything. 
+
+1. **Monitor with diagnostic logs in Azure Monitor**: You can monitor the logs of your Azure Cosmos DB account and create dashboards from the Azure Monitor. 
+
+1. **Monitor programmatically with SDKs**: You can monitor your Azure Cosmos DB account programmatically by using the .NET, Java, Python, Node.js SDKs, and the headers in REST API. 
+
+### Analyzing Cosmos DB Metrics 
+
+1.	Sign in to the Azure portal and navigate to your Azure Cosmos DB Account.
+
+2.	From the left-hand navigation bar , Under **Monitoring** select **Metrics**.
+
+
+ ![metrics](./assets/09-metrics_option.jpg "metrics ")
+ 
+
+3.	From the Metrics pane, click on the **Scope** to open a pop-up. You can **Select a scope** under **Browse** by selecting the subscription, Resource types and the location. For the Resource type, select Azure Cosmos DB accounts then choose one of your existing Azure Cosmos DB accounts and click **Apply**.
+
+
+ ![resources](./assets/09-metrics_resources.jpg "resources")
+
+4.	Next you can select a **Metric** from the list of available metrics. You can select metrics specific to request units, storage, latency, availability, Cassandra, and others. To learn in detail about all the available metrics in this list, see the Metrics by category article. In this example, let's select **``Total Request Units``** as Metric and **``Sum``** as the Aggregation Value.
+ 
+> In addition to these details, you can also select the Time range and Time granularity of the metrics. At max, you can view metrics for the past 30 days. After you apply the filter, a chart is displayed based on your filter. You can see the sum of request units consumed per minute for the selected period.
+ 
+ 
+ ![metrics type](./assets/09-metrics_type.jpg "metrics type")
+ 
+
+* You can also filter metrics and the chart displayed by a specific **``CollectionName``**, **``DatabaseName``**, **``OperationType``**, **``Region``** and **``StatusCode``**. 
+
+* To filter the metrics, select **Add filter** and choose the required property such as **``OperationType``** and select a ``Values`` such as **``Query``**. The graph then displays the request units consumed for the query operation for the selected period. The operations executed via Stored procedure aren't logged so they aren't available under the OperationType metric.
+
+
+ ![metrics filter](./assets/09-metrics_filter.jpg "metrics filter")
+ 
+ 
+* You can group metrics by using the **``Apply splitting``** option. For example, you can group the request units per operation type and view the graph for all the operations at once as shown in the following image.
+
+
+ ![metrics split](./assets/09-metrics_split.jpg "metrics split")
+ 
+ 
+### Analyzing Cosmos DB logs
+
+Data in Azure Monitor Logs is stored in tables where each table has its own set of unique properties. All resource logs in Azure Monitor have the same fields followed by service-specific fields. You can view it independently or route it to Azure Monitor Logs, where you can do much more complex queries using Log Analytics.
+
+Azure Cosmos DB stores data in the following tables.
+
+|Table              |Description   |   
+|-------------------|--------------|
+|AzureDiagnostics   |Common table used by multiple services to store Resource logs. Resource logs from Azure Cosmos DB can be identified with **``MICROSOFT.DOCUMENTDB``**.|  
+|AzureActivity      |Common table that stores all records from the Activity log.   |  
+
+1.  Enable diagnostics settings 
+
+    Prior to using Log Analytics to Analyze Azure Cosmos DB Logs, you must enable diagnostic settings.
+
+    There are multiple ways to create the diagnostic settings, the Azure portal, via REST API, PowerShell or via Azure CLI. To create the diagnostic settings using the Azure portal, navigate to the Azure Cosmos DB account. Under the **Monitoring** section, choose Diagnostic settings. Choose **+ Add diagnostic setting** to create a new diagnostic setting and choose the logs you wish to collect and chose **Send to Log Analytics Workspace** and select the log analytics workspace and storage account from the drop down.
+
+ ![diagnostics](./assets/09-diag_option.jpg "diagnostics")
+ 
+
+
+
+
+
+ 
+ 
+ 
+ ![diagnostics](./assets/09-diag_settings_create.jpg "diagnostics options")
+
+2.  Trouble shoot issues with resource-specific table queries
+
+    When Azure Cosmos DB diagnostics data is sent to Log Analytics, it's sent to either the **AzureDiagnostics** table or to following **Resource-specific** tables. The preferred mode is to send the data to Resource-specific tables, as such each log chosen under the diagnostic settings options will have its own table. Choosing this mode makes it easier to work with the diagnostic data, easier to discover the schemas used, and improve performance in latency and query times.
+
+    **CDBDataPlaneRequests** - Logs back-end requests for operations that execute create, update, delete, or retrieve data.
+
+    **CDBQueryRuntimeStatistics** - Logs details query operations against the NoSQL API account.
+
+    **CDBPartitionKeyStatistics** - Logs logical partition key statistics in estimated KB. It's helpful when troubleshooting skew storage.
+
+    **CDBPartitionKeyRUConsumption** - Logs every second aggregated RU/s consumption of partition keys. It's helpful when troubleshooting hot partitions.
+
+    **CDBControlPlaneRequests** - Logs Azure Cosmos DB account control data, for example adding or removing regions in the replication settings.
+
+    Navigate to **Logs** link in your Cosmos DB account, open a new query window and execute following example queries and observe results.   
+
+    ``` Kusto
+    CDBDataPlaneRequests
+    | where TimeGenerated >= ago(1h)
+    | summarize OperationCount = count(), TotalRequestCharged=sum(todouble(RequestCharge)) by OperationName
+    | order by TotalRequestCharged desc
+    ```
+    > Returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
+
+    ``` Kusto
+    CDBDataPlaneRequests 
+    | where TimeGenerated >= ago(2h)
+    | summarize requestcount=count() by StatusCode, bin(TimeGenerated, 10m)
+    | render timechart
+    ```
+
+    > Returns a timechart graph for all successful (status 200) and rate limited (status 429) request in the last hour.
+
+    Rerun the queries again by adjusting the **Time range** and observe the results. 
+
+3.  Troubleshoot issues with diagnostics table(legacy mode) queries
+
+    If the legacy mode is chosen, the diagnostics data will be stored in the **``AzureDiagnostics``** table, so all kusto queries will be executed against that table. Enable legacy mode by executing following instructions. 
+
+    i. Navigate to your **Diagnostic settings** blade under Monitoring. Click on **Edit setting** option present infront of your diagnostic settings.
+
+    ![diagnostics1](./assets/09-troubleshoot_edit.jpg "diagnostics options edit ")
+
+
+    ii. Edit the destination details by toggling the destination table to **AzureDiagnostics**
+
+    ![diagnostics2](./assets/09-troubleshoot_diag.jpg "diagnostics options")
+
+
+    Since multiple Azure resources could also be populating this table, include the filter **``ResourceProvider=="MICROSOFT.DOCUMENTDB"``** in your ``where`` clause to only return Azure Cosmos DB entries. Additionally, to differentiate between the different logs you picked under **``diagnostic settings``**, add a filter on the **``Category column``**. For example, to return documents for the **``QueryRuntimeStatistics log``**, include the where clause | **``where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="QueryRuntimeStatistics"``**. 
+
+    > Kusto is case-sensitive so make sure your column names are the right case. 
+
+    Navigate to **Logs** link in your Cosmos DB account, open a new query window and execute following example queries and observe results.   
+
+    ``` Kusto
+    AzureDiagnostics 
+    | where TimeGenerated >= ago(1h)
+    | where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
+    | summarize OperationCount = count(), TotalRequestCharged=sum(todouble(requestCharge_s)) by OperationName
+    | order by TotalRequestCharged desc
+    ```
+    > Returns the count and the total request charged of the different Azure Cosmos DB operation types in the last hour.
+
+
+    ``` Kusto
+    AzureDiagnostics 
+    | where TimeGenerated >= ago(1h)
+    | where ResourceProvider=="MICROSOFT.DOCUMENTDB" and Category=="DataPlaneRequests" 
+    | summarize requestcount=count() by statusCode_s, bin(TimeGenerated, 10m)
+    | render timechart
+    ```
+    > Returns a timechart graph for all successful (status 200) and rate limited (status 429) requests in the last hour. The requests will be aggregated every 10 minutes.
+
+    Rerun queries by adjusting the **Time range** and observe the results.  
