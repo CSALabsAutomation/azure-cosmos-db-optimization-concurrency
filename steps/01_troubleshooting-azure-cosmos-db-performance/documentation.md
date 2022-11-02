@@ -1549,6 +1549,10 @@ Azure Cosmos DB stores data in the following tables.
  ![diagnostics](./assets/09-diag_option.jpg "diagnostics")
  
 
+
+
+
+
  
  
  
