@@ -73,7 +73,7 @@ You will now create a database and container within your Azure Cosmos DB account
                             "description": "jar Gerber Third Foods (6 oz)",
                             "weightInGrams": 170
                         }
-                    ],
+                    ]
 
                 }
     ```
@@ -257,7 +257,7 @@ Wait till the container, database and the item are created.
                      Console.ForegroundColor=ConsoleColor.White;
                     for (int i = 1; i <= 100000; i++)
                     {
-                        ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                        ItemResponse<Food> response = await container.ReadItemAsync<Food>("024108", new PartitionKey("Fats and Oils"));
                         await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
                   ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
@@ -306,7 +306,7 @@ Wait till the container, database and the item are created.
                         Console.ForegroundColor=ConsoleColor.White;
                         for (int i = 1; i <= 1000000; i++)
                         {
-                            ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                            ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Baby Foods"));
                             await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
                         ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
