@@ -73,7 +73,7 @@ You will now create a database and container within your Azure Cosmos DB account
                             "description": "jar Gerber Third Foods (6 oz)",
                             "weightInGrams": 170
                         }
-                    ],
+                    ]
 
                 }
     ```
@@ -84,7 +84,7 @@ Wait till the container, database and the item are created.
 
 1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **concurrency_lab** folder that will be used to contain the content of your .NET Core project.
     
-1. In the **concurrency_lab** folder, right-click the folder and select the **Open with Code** menu option.
+1. In the Visual Studio Code , click on **File -> Open Folder** and select **concurrency_lab** folder.
 
 
 1. In the Visual Studio Code window that appears, right-click the **Explorer** pane and select the **Open in integrated Terminal** menu option.
@@ -257,7 +257,7 @@ Wait till the container, database and the item are created.
                      Console.ForegroundColor=ConsoleColor.White;
                     for (int i = 1; i <= 100000; i++)
                     {
-                        ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                        ItemResponse<Food> response = await container.ReadItemAsync<Food>("024108", new PartitionKey("Fats and Oils"));
                         await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
                   ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };
@@ -306,7 +306,7 @@ Wait till the container, database and the item are created.
                         Console.ForegroundColor=ConsoleColor.White;
                         for (int i = 1; i <= 1000000; i++)
                         {
-                            ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Fats and Oils"));
+                            ItemResponse<Food> response = await container.ReadItemAsync<Food>("04002", new PartitionKey("Baby Foods"));
                             await Console.Out.WriteLineAsync($"Existing ETag:\t{response.ETag}");
 
                         ItemRequestOptions requestOptions = new ItemRequestOptions { IfMatchEtag = response.ETag };

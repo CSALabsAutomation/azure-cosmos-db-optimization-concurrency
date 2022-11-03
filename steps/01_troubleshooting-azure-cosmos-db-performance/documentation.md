@@ -40,7 +40,7 @@ You will now create a database and container within your Azure Cosmos DB account
 
 1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **performance_lab** folder that will be used to contain the content of your .NET Core project.
 
-1. In the `performance_lab` folder, right-click the folder and select the **Open with Code** menu option.
+1. In the Visual Studio Code , click on **File -> Open Folder** and select **performance_lab** folder.
 
     > Alternatively, you can run a terminal in your current directory and execute the ``code .`` command.
 
@@ -96,7 +96,10 @@ You will now create a database and container within your Azure Cosmos DB account
     > This command will build the project.
 
 
-1. In the **Explorer** pane, select the **DataTypes.cs**
+1. In the **Explorer** pane verify that you have a `DataTypes.cs` file in your project folder.
+
+   > This file contains the data classes you will be working with in the following steps.If it is not in your project folder,you can copy it from this path in the cloned repo here `C:\Labs\solutions\09-Troubleshooting\DataTypes.cs`
+   
 1. Review the file, notice it contains the data classes you will be working with in the following steps.
 
 1. Select the **Program.cs** link in the **Explorer** pane to open the file in the editor.
