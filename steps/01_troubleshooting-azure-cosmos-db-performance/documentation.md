@@ -40,7 +40,7 @@ You will now create a database and container within your Azure Cosmos DB account
 
 1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **performance_lab** folder that will be used to contain the content of your .NET Core project.
 
-1. In the `performance_lab` folder, right-click the folder and select the **Open with Code** menu option.
+1. In the Visual Studio Code , click on **File -> Open Folder** and select **performance_lab** folder.
 
     > Alternatively, you can run a terminal in your current directory and execute the ``code .`` command.
 
