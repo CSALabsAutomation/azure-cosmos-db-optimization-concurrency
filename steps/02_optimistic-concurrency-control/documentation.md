@@ -84,7 +84,7 @@ Wait till the container, database and the item are created.
 
 1. Open **File explorer**, navigate to **_C:\Users\cosmosLabUser\Desktop_** location and create **concurrency_lab** folder that will be used to contain the content of your .NET Core project.
     
-1. In the **concurrency_lab** folder, right-click the folder and select the **Open with Code** menu option.
+1. In the Visual Studio Code , click on **File -> Open Folder** and select **concurrency_lab** folder.
 
 
 1. In the Visual Studio Code window that appears, right-click the **Explorer** pane and select the **Open in integrated Terminal** menu option.
