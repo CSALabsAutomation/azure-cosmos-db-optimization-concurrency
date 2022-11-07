@@ -1416,6 +1416,8 @@ Many applications have workloads that vary over time in a predictable way. For e
     }
     ```
 1. Before run this **UpdateThroughput** method You should change Autoscale to Manual Scale settings in the respective Container.
+   * Ensure to click **Save** after choosing Manual (It takes approximately 20 seconds for the change to save)
+   * The Estimate your required throughput setting should be set to 2000 RU/s or less (You may need to save again if the initial value is out of range)
 
     ![Scalesettings](./assets/09-Scalesettings.JPG "Select Scale and Settings")
     
