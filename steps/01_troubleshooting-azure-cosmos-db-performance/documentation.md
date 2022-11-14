@@ -891,7 +891,7 @@ You will now tune your requests to Azure Cosmos DB by manipulating the SQL query
         MaxConcurrency = maxDegreeOfParallelism
     };
     ```
-      **QueryRequestOptions** - Specifies the options associated with query methods in the Azure Cosmos DB database service.     
+      **QueryRequestOptions** class - Specifies the options associated with query methods in the Azure Cosmos DB database service.     
 
       **MaxItemCount** - Gets or sets the maximum number of items to be returned in the enumeration operation in the Azure Cosmos DB service.
         
