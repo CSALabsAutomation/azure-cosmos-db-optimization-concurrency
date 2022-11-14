@@ -881,14 +881,18 @@ You will now tune your requests to Azure Cosmos DB by manipulating the SQL query
     int maxDegreeOfParallelism = 1;
     int maxBufferedItemCount = 0;
     ```
-      QueryRequestOptions - Specifies the options associated with query methods in the Azure Cosmos DB database service.
-  
-      MaxConcurrency - Gets or sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive           property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of               concurrent operations to run.
+      QueryRequestOptions - Specifies the options associated with query methods in the Azure Cosmos DB database service.     
 
       MaxItemCount - Gets or sets the maximum number of items to be returned in the enumeration operation in the Azure Cosmos DB service.
-  
+        
       MaxBufferedItemCount - Gets or sets the maximum number of items that can be buffered client side during parallel query execution in the Azure Cosmos DB service.       A positive property value limits the number of buffered items to the set value. If it is set to less than 0, the system automatically decides the number of           items to buffer.
-
+      
+      MaxConcurrency - Gets or sets the number of concurrent operations run client side during parallel query execution in the Azure Cosmos DB service. A positive           property value limits the number of concurrent operations to the set value. If it is set to less than 0, the system automatically decides the number of               concurrent operations to run.
+      
+     MaxDegreeOfParallelism - Gets or sets the property affects the number of concurrent operations run by Parallel method calls that are passed
+     this ParallelOptions instance.A positive property value limits the number of concurrent operations to the set value. If it is -1,
+     there is no limit on the number of concurrently running operations(with the exception of the ForEachAsync method, where -1 means ProcessorCount).
+     
 1. Add the following lines of code to configure options for a query from the variables:
 
     ```csharp
